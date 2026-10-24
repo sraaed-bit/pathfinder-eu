@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pathfinder EU · Regulatory strategy engine by Dr. Hatem Raad</title>
+<meta name="description" content="Pathfinder EU by Dr. Hatem Raad: plan a medicine's route to the EU market. Procedure, legal basis, orphan/PRIME/CMA eligibility, paediatric and EU HTA obligations, approval timeline and protection dates.">
+<meta name="author" content="Dr. Hatem Raad">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pathfinder EU — plan the route from molecule to EU market">
+<meta property="og:description" content="Pathfinder EU by Dr. Hatem Raad: plan a medicine's route to the EU market. Procedure, legal basis, orphan/PRIME/CMA eligibility, paediatric and EU HTA obligations, approval timeline and protection dates.">
+<meta property="og:image" content="og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='1' y='1' width='38' height='38' rx='10' fill='%232744C4'/%3E%3Cpath d='M8 29 C 14 29, 14 20, 20 20 S 26 11, 32 11' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='11' r='3.6' fill='white'/%3E%3C/svg%3E">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;500;600;700;800&family=Overpass+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: a transit map for regulation — masthead with a live route line, two-column builder
+   (questions left, sticky strategy report right), protection timeline drawn as a Gantt "track". */
+:root{
+  --paper:#F5F6F9; --surface:#FFFFFF; --sunk:#ECEFF4; --ink:#0F1630; --muted:#535D76; --faint:#8790A6;
+  --line:#DCE1EA; --line-strong:#C1C8D6;
+  --accent:#2744C4; --accent-soft:#E3E8FB; --accent-ink:#FFFFFF;
+  --time:#D9561F; --time-soft:#FBE7DD;
+  --ok:#1C7A4C; --ok-soft:#DFF1E6; --warn:#9A5F08; --warn-soft:#F7EBD3; --block:#B02E39; --block-soft:#F8E0E2; --no:#7D869C; --no-soft:#ECEEF3;
+  --b-dp:#2744C4; --b-mp:#6E86E6; --b-ext:#AAB9F1; --b-oe:#8448C2; --b-pat:#3E465C; --b-spc:#D9561F; --b-paed:#F0A07A;
+  --shadow:0 1px 2px rgba(15,22,48,.06),0 10px 28px -14px rgba(15,22,48,.22);
+  --f-ui:"Overpass","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --f-read:"Source Serif 4","Iowan Old Style",Georgia,serif;
+  --f-mono:"Overpass Mono","SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0B0F1E; --surface:#131A2D; --sunk:#192139; --ink:#E5E9F5; --muted:#9AA3BD; --faint:#6D7693;
+  --line:#252D47; --line-strong:#38415F; --accent:#8299FF; --accent-soft:#1E2752; --accent-ink:#0B0F1E;
+  --time:#FF8A57; --time-soft:#3A2116; --ok:#6CD3A0; --ok-soft:#14342A; --warn:#EDB55C; --warn-soft:#3A2B12; --block:#F48A93; --block-soft:#3E1A20; --no:#808AA6; --no-soft:#1C233A;
+  --b-dp:#8299FF; --b-mp:#5D72CC; --b-ext:#3E4E92; --b-oe:#B58BEB; --b-pat:#8A93AE; --b-spc:#FF8A57; --b-paed:#B0613D;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px -14px rgba(0,0,0,.7); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#0B0F1E; --surface:#131A2D; --sunk:#192139; --ink:#E5E9F5; --muted:#9AA3BD; --faint:#6D7693;
+  --line:#252D47; --line-strong:#38415F; --accent:#8299FF; --accent-soft:#1E2752; --accent-ink:#0B0F1E;
+  --time:#FF8A57; --time-soft:#3A2116; --ok:#6CD3A0; --ok-soft:#14342A; --warn:#EDB55C; --warn-soft:#3A2B12; --block:#F48A93; --block-soft:#3E1A20; --no:#808AA6; --no-soft:#1C233A;
+  --b-dp:#8299FF; --b-mp:#5D72CC; --b-ext:#3E4E92; --b-oe:#B58BEB; --b-pat:#8A93AE; --b-spc:#FF8A57; --b-paed:#B0613D;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px -14px rgba(0,0,0,.7); color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* masthead */
+.mast{background:var(--surface);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink)}
+.brand-name{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.brand-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.top-r{display:flex;gap:10px;align-items:center}
+.kit{font-size:12.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.kit:hover{border-color:var(--accent);color:var(--ink)}
+.theme-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;padding-block:22px 6px}
+.hero h1{font-size:clamp(30px,4.4vw,52px);font-weight:800;letter-spacing:-.035em;line-height:1}
+.hero h1 span{color:var(--accent)}
+.hero-lede{font-family:var(--f-read);font-size:17px;color:var(--muted);margin-top:12px;max-width:62ch;line-height:1.5}
+.hero-r{display:flex;gap:22px}
+.hero-r div{display:flex;flex-direction:column;align-items:flex-end}
+.hero-r b{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.hero-r span{font-size:12px;color:var(--muted);margin-top:4px;text-align:right}
+
+/* route line */
+.route-wrap{padding-block:20px 22px}
+.route-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.route-head b{font-size:14px}
+.route-scroll{overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.route{position:relative;display:grid;grid-template-columns:repeat(9,minmax(112px,1fr));min-width:1008px}
+.route::before{content:"";position:absolute;left:calc(100%/18);right:calc(100%/18);top:15px;height:6px;border-radius:3px;background:var(--accent)}
+.stn{appearance:none;border:0;background:none;text-align:left;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:0 6px;position:relative;z-index:1}
+.stn .dot{width:36px;height:36px;border-radius:50%;background:var(--surface);border:6px solid var(--accent);display:grid;place-items:center;transition:transform .2s}
+.stn:hover .dot{transform:scale(1.12)}
+.stn .dot i{width:10px;height:10px;border-radius:50%;background:var(--st)}
+.stn .lbl{font-weight:800;font-size:13.5px;text-align:center;line-height:1.15}
+.stn .sub{font-size:12px;color:var(--muted);text-align:center;line-height:1.3}
+.stn .date{font-family:var(--f-mono);font-size:11.5px;color:var(--time);font-weight:600}
+.stn.skip{opacity:.42}
+.stn.skip .dot{border-color:var(--line-strong)}
+
+/* status */
+.s-req{--st:var(--accent);--st-soft:var(--accent-soft)} .s-ok{--st:var(--ok);--st-soft:var(--ok-soft)} .s-warn{--st:var(--warn);--st-soft:var(--warn-soft)}
+.s-block{--st:var(--block);--st-soft:var(--block-soft)} .s-no,.s-na{--st:var(--no);--st-soft:var(--no-soft)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px 2px;border-radius:999px;background:var(--st-soft);color:var(--st);white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--st)}
+
+/* tabs */
+.tabs-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:none;padding:14px 14px 11px;font-weight:700;font-size:14.5px;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+main{padding-block:26px 60px}
+
+/* buttons */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:9px 15px 8px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);text-decoration:none}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.sm{padding:6px 11px 5px;font-size:13px}
+.btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+.btn.ghost:hover{background:var(--sunk);color:var(--ink)}
+.link-btn{appearance:none;border:0;background:none;color:var(--accent);font-weight:700;cursor:pointer;padding:0;font-size:inherit}
+.link-btn:hover{text-decoration:underline}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+
+/* builder */
+.builder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:26px;align-items:start}
+.qcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.examples{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ex{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 4px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.ex:hover{border-color:var(--accent);color:var(--ink)}
+.ex[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.step{padding:20px 20px 22px;display:flex;flex-direction:column;gap:18px}
+.step-h{display:flex;gap:12px;align-items:center}
+.step-n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
+.step-h h2{font-size:20px}
+.q{display:flex;flex-direction:column;gap:8px}
+.q > label,.q .ql{font-weight:700;font-size:14px}
+.q .qh{font-size:13px;color:var(--muted);margin-top:-4px;line-height:1.4}
+.types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.type{appearance:none;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:10px 12px 9px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.type:hover{border-color:var(--accent)}
+.type[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.type b{font-size:14px;line-height:1.25}
+.type span{font-size:12px;color:var(--muted);line-height:1.3}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{appearance:none;border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:7px 12px 6px;font-size:13.5px;font-weight:700;cursor:pointer;color:var(--muted)}
+.seg button:hover{color:var(--ink);border-color:var(--accent)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer;line-height:1.4}
+.chk input{width:17px;height:17px;margin-top:1px;accent-color:var(--accent);flex:none}
+input[type=text],input[type=date],input[type=number],select{font:inherit;font-size:14.5px;width:100%;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 11px 8px}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+
+/* report */
+.report{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);max-height:calc(100vh - 82px);overflow:auto;scrollbar-width:thin;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+.r-head{padding:22px 24px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.r-head h2{font-size:26px}
+.r-chips{display:flex;flex-wrap:wrap;gap:6px}
+.r-chip{font-size:12.5px;font-weight:700;padding:4px 10px 3px;border-radius:6px;background:var(--sunk)}
+.r-chip:first-child{background:var(--ink);color:var(--paper)}
+.ex-flag{font-size:12px;font-weight:700;color:var(--warn);background:var(--warn-soft);padding:3px 9px 2px;border-radius:999px;align-self:flex-start}
+.r-actions{display:flex;gap:8px;flex-wrap:wrap}
+.r-sec{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;scroll-margin-top:20px}
+.r-sec:last-child{border-bottom:0}
+.r-sec h3{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.r-sec h3 .n{font-family:var(--f-mono);color:var(--accent);letter-spacing:0}
+.r-big{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.r-sub{font-size:13px;color:var(--muted)}
+.r-text{font-family:var(--f-read);font-size:15px;line-height:1.55}
+.r-list{margin:0;padding-left:18px;font-family:var(--f-read);font-size:14.5px;line-height:1.5;display:flex;flex-direction:column;gap:4px}
+.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tool{border:1px solid var(--line);border-radius:10px;padding:12px 13px;display:flex;flex-direction:column;gap:7px;background:linear-gradient(var(--st-soft),var(--st-soft)) top/100% 4px no-repeat,var(--surface)}
+.tool b{font-size:14.5px;line-height:1.25}
+.tool p{font-family:var(--f-read);font-size:13.5px;line-height:1.45;color:var(--muted)}
+.tool small{font-size:11.5px;color:var(--faint)}
+.crit{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.crit li{display:flex;gap:7px;align-items:flex-start}
+.crit li span{font-weight:800;width:14px;flex:none}
+.flag{display:flex;gap:10px;font-size:13.5px;line-height:1.45;padding:10px 12px;border-radius:9px;background:var(--st-soft)}
+.flag b{color:var(--st);text-transform:uppercase;font-size:11px;letter-spacing:.08em;padding-top:2px;flex:none}
+.tline{list-style:none;margin:0;padding:0;position:relative}
+.tline::before{content:"";position:absolute;left:97px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--line)}
+.tline li{display:grid;grid-template-columns:86px 24px minmax(0,1fr);padding:6px 0;align-items:start}
+.tline .d{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--time);padding-top:2px;font-variant-numeric:tabular-nums}
+.tline .p{width:13px;height:13px;border-radius:50%;border:3px solid var(--accent);background:var(--surface);margin:3px 0 0 6px;position:relative;z-index:1}
+.tline li.key .p{background:var(--accent)}
+.tline .w b{display:block;font-size:14px;line-height:1.3}
+.tline .w span{font-size:12.5px;color:var(--muted)}
+.prot-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kd{border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.kd small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kd b{font-family:var(--f-mono);font-size:15px;color:var(--time)}
+
+/* protection */
+.prot{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:26px;align-items:start}
+.prot-form{padding:20px;display:flex;flex-direction:column;gap:16px}
+.kds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kds .kd{background:var(--surface)}
+.kds .kd b{font-size:18px}
+.kds .kd span{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35}
+.kds .kd.hl{border-color:var(--time);background:var(--time-soft)}
+.gantt-card{padding:20px 22px;margin-top:14px}
+.gantt-scroll{overflow-x:auto}
+.gantt{min-width:640px;position:relative}
+.g-row{display:grid;grid-template-columns:170px minmax(0,1fr);gap:12px;align-items:center;min-height:38px}
+.g-row .gl{font-size:13px;font-weight:700;line-height:1.2}
+.g-row .gl small{display:block;font-weight:500;color:var(--muted);font-family:var(--f-mono);font-size:11px}
+.g-track{position:relative;height:22px;background:var(--sunk);border-radius:5px}
+.g-bar{position:absolute;top:0;bottom:0;border-radius:5px;cursor:help}
+.g-axis{display:grid;grid-template-columns:170px minmax(0,1fr);gap:12px;margin-top:6px}
+.g-ticks{position:relative;height:18px}
+.g-ticks span{position:absolute;transform:translateX(-50%);font-family:var(--f-mono);font-size:10.5px;color:var(--faint)}
+.g-mark{position:absolute;top:0;bottom:24px;width:0;border-left:2px dashed var(--time);pointer-events:none}
+.g-mark span{position:absolute;top:-2px;left:4px;font-size:11px;font-weight:800;color:var(--time);white-space:nowrap;background:var(--surface);padding:0 3px;border-radius:3px}
+.g-mark.today{border-left-color:var(--faint)}
+.g-mark.today span{color:var(--faint)}
+.notes{font-family:var(--f-read);font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:8px;margin-top:14px}
+
+/* reading */
+.read{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:40px;align-items:start}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);display:flex;flex-direction:column;gap:2px;font-size:14px}
+.toc a{text-decoration:none;color:var(--muted);padding:5px 10px;border-radius:6px;font-weight:600}
+.toc a:hover{color:var(--ink);background:var(--sunk)}
+.prose{max-width:82ch;display:flex;flex-direction:column;gap:14px;font-family:var(--f-read);font-size:16.5px;line-height:1.62}
+.prose h2{font-family:var(--f-ui);font-size:30px;margin-top:26px;scroll-margin-top:80px}
+.prose h2:first-child{margin-top:0}
+.prose h3{font-family:var(--f-ui);font-size:17px;margin-top:8px}
+.prose ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.tbl-scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-family:var(--f-ui);font-size:14px;line-height:1.45}
+.tbl th,.tbl td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tbl td:first-child{font-weight:700}
+.tbl .num{font-family:var(--f-mono);white-space:nowrap}
+.mile{list-style:none;padding:0;margin:0;font-family:var(--f-ui);border-left:3px solid var(--line);margin-left:6px}
+.mile li{position:relative;padding:4px 0 14px 22px}
+.mile li::before{content:"";position:absolute;left:-9px;top:6px;width:15px;height:15px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.mile li.done::before{background:var(--accent)}
+.mile li.next::before{border-color:var(--time);background:var(--time-soft)}
+.mile b{display:block;font-size:15px}
+.mile span{font-size:14px;color:var(--muted)}
+.mile .d{font-family:var(--f-mono);font-size:12.5px;color:var(--time);font-weight:600}
+.callout{border-radius:12px;padding:16px 18px;background:var(--accent-soft);font-family:var(--f-ui);font-size:14.5px;line-height:1.5}
+
+/* contact */
+.profile{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:start}
+.p-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center;padding:28px;border-radius:14px;background:var(--accent-soft)}
+.monogram{width:92px;height:92px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:34px;font-weight:800}
+.p-hero h2{font-size:clamp(28px,3.4vw,40px)}
+.p-role{font-size:15px;color:var(--muted);margin-top:6px}
+.p-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.p-tag{font-size:12.5px;font-weight:700;border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:3px 10px 2px}
+.p-tag.open{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.cv{display:flex;flex-direction:column;margin-top:22px}
+.cv-row{display:grid;grid-template-columns:minmax(0,120px) minmax(0,1fr);gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.cv-row .yr{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);padding-top:2px}
+.cv-row b{display:block;font-size:15px}
+.cv-row span{font-size:14px;color:var(--muted)}
+.contact-card{padding:22px;display:flex;flex-direction:column;gap:14px}
+.c-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:10px}
+.c-line small{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.c-line a{font-weight:700;font-size:15.5px;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.legal{margin-top:34px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.legal h3{font-size:21px;margin-bottom:8px}
+.legal p,.legal li{font-family:var(--f-read);font-size:14.5px;color:var(--muted);line-height:1.6}
+.legal ul{padding-left:18px;margin:6px 0 0}
+.sister{display:flex;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:12px;text-decoration:none;color:var(--ink);background:var(--surface)}
+.sister:hover{border-color:var(--accent)}
+footer{border-top:1px solid var(--line);background:var(--surface)}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-block:22px;font-size:13px;color:var(--muted)}
+.foot b{color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:9px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:calc(100vw - 32px)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1060px){
+  .builder,.prot{grid-template-columns:minmax(0,1fr)}
+  .report{position:static;max-height:none}
+  .kds{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .hero-r div{align-items:flex-start}
+  .hero-r span{text-align:left}
+  .kit{display:none}
+  .types,.tools,.row2{grid-template-columns:minmax(0,1fr)}
+  .prot-mini{grid-template-columns:minmax(0,1fr)}
+  .read,.profile,.legal{grid-template-columns:minmax(0,1fr)}
+  .toc{position:static;flex-direction:row;flex-wrap:wrap}
+  .p-hero{grid-template-columns:minmax(0,1fr)}
+  .cv-row{grid-template-columns:minmax(0,1fr);gap:2px}
+  .r-head,.r-sec{padding-left:16px;padding-right:16px}
+  .step{padding:16px}
+  .gantt{min-width:0}
+  .g-row,.g-axis{grid-template-columns:104px minmax(0,1fr);gap:10px}
+  .g-row .gl{font-size:12px}
+  .g-mark span{display:none}
+  .g-ticks span:nth-child(even){display:none}
+  .gantt-card{padding:16px 14px}
+}
+</style>
+
+<div class="mast">
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="#strategy" data-go="strategy" aria-label="Pathfinder EU home">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="1" y="1" width="38" height="38" rx="10" fill="var(--accent)"/>
+          <path d="M8 29 C 14 29, 14 20, 20 20 S 26 11, 32 11" fill="none" stroke="var(--accent-ink)" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="8" cy="29" r="3.6" fill="var(--accent)" stroke="var(--accent-ink)" stroke-width="2.4"/>
+          <circle cx="20" cy="20" r="3.6" fill="var(--accent)" stroke="var(--accent-ink)" stroke-width="2.4"/>
+          <circle cx="32" cy="11" r="3.6" fill="var(--accent-ink)"/>
+        </svg>
+        <div><div class="brand-name">Pathfinder EU</div><div class="brand-sub">Regulatory strategy engine for EU medicines</div></div>
+      </a>
+      <div class="top-r">
+        <a class="kit" id="kitLink" href="#contact" data-go="contact">Regulatory toolkit by Dr. Hatem Raad</a>
+        <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      </div>
+    </div>
+    <section class="hero" aria-label="Introduction">
+      <div>
+        <p class="eyebrow">From molecule to EU market</p>
+        <h1>Plan the route <span>before</span> you file.</h1>
+        <p class="hero-lede">Describe your medicine. Pathfinder works out the procedure, the legal basis, every designation and fast-track you qualify for, the paediatric and EU HTA obligations, the approval timeline and the exact dates your protection ends.</p>
+      </div>
+      <div class="hero-r"><div><b>8</b><span>legal bases</span></div><div><b>4</b><span>procedures</span></div><div><b>6</b><span>expedited tools<br>&amp; designations</span></div></div>
+    </section>
+    <section class="route-wrap" aria-label="Your regulatory route">
+      <div class="route-head"><b id="routeTitle">Your route</b><span class="eyebrow" id="routeSub"></span></div>
+      <div class="route-scroll"><div class="route" id="route"></div></div>
+    </section>
+  </div>
+</div>
+
+<nav class="tabs-bar" aria-label="Sections">
+  <div class="wrap"><div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-view="strategy" aria-selected="true">Strategy builder</button>
+    <button class="tab" role="tab" data-view="protection" aria-selected="false">Protection &amp; market entry</button>
+    <button class="tab" role="tab" data-view="pathways" aria-selected="false">Pathways explained</button>
+    <button class="tab" role="tab" data-view="reform" aria-selected="false">EU reform 2026</button>
+    <button class="tab" role="tab" data-view="contact" aria-selected="false">About &amp; contact</button>
+  </div></div>
+</nav>
+
+<main class="wrap">
+  <section class="view" id="view-strategy" aria-label="Strategy builder">
+    <div class="builder">
+      <div class="qcol" id="qcol"></div>
+      <aside class="report" id="report" aria-live="polite" aria-label="Strategy report"></aside>
+    </div>
+  </section>
+  <section class="view" id="view-protection" hidden aria-label="Protection and market entry">
+    <div class="prot">
+      <div class="card prot-form" id="protForm"></div>
+      <div id="protOut"></div>
+    </div>
+  </section>
+  <section class="view" id="view-pathways" hidden aria-label="Pathways explained">
+    <div class="read"><nav class="toc" aria-label="On this page"><a href="#pw-proc" data-scroll>Procedures</a><a href="#pw-basis" data-scroll>Legal bases</a><a href="#pw-tools" data-scroll>Expedited tools</a><a href="#pw-orphan" data-scroll>Orphans</a><a href="#pw-paed" data-scroll>Paediatrics</a><a href="#pw-prot" data-scroll>Protection</a><a href="#pw-hta" data-scroll>EU HTA</a></nav><div class="prose" id="pathways"></div></div>
+  </section>
+  <section class="view" id="view-reform" hidden aria-label="EU reform 2026">
+    <div class="read"><nav class="toc" aria-label="On this page"><a href="#rf-status" data-scroll>Status</a><a href="#rf-compare" data-scroll>Current vs reform</a><a href="#rf-other" data-scroll>Other changes</a><a href="#rf-src" data-scroll>Sources</a></nav><div class="prose" id="reformTxt"></div></div>
+  </section>
+  <section class="view" id="view-contact" hidden aria-label="About and contact"><div id="contact"></div></section>
+</main>
+
+<footer><div class="wrap foot">
+  <div><b>Pathfinder EU</b> · designed and built by <b>Dr. Hatem Raad</b>, MD · Master of Drug Regulatory Affairs candidate, University of Bonn</div>
+  <div>Strategy support only, not legal or regulatory advice. <a href="#contact" data-go="contact">Contact, imprint &amp; privacy</a></div>
+</div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+/* Pathfinder EU — strategy engine (pure functions, no DOM)
+   Legal sources: Regulation (EC) No 726/2004 (incl. Annex), Directive 2001/83/EC (Arts 8(3), 10, 10a, 10b, 10c, 14, 16a),
+   Regulation (EC) No 141/2000 (orphans), Regulation (EC) No 1901/2006 (paediatrics), Regulation (EC) No 507/2006 (CMA),
+   Regulation (EC) No 469/2009 (SPC), Regulation (EU) 2021/2282 (HTA). Reform figures: Council-adopted pharma package (Sept 2026), pending EP vote. */
+const PF = (function(){
+"use strict";
+
+/* ---------- dates ---------- */
+const D = s => { if (!s) return null; if (s instanceof Date) return new Date(s); const [y,m,d] = String(s).split("-").map(Number); return (y && m && d) ? new Date(y, m-1, d) : null; };
+const addD = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const addM = (d,n) => { const x = new Date(d); const day = x.getDate(); x.setDate(1); x.setMonth(x.getMonth()+n); const last = new Date(x.getFullYear(), x.getMonth()+1, 0).getDate(); x.setDate(Math.min(day,last)); return x; };
+const addY = (d,n) => addM(d, Math.round(n*12));
+const iso = d => d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}` : "";
+const max = (...ds) => ds.filter(Boolean).reduce((a,b) => b>a?b:a);
+const min = (...ds) => ds.filter(Boolean).reduce((a,b) => b<a?b:a);
+const yearsBetween = (a,b) => (b - a) / (365.2425*864e5);
+
+/* ---------- product types ---------- */
+const TYPES = {
+  nas_chem: {label:"New active substance (chemical)", short:"New chemical entity", newProduct:true, basis:"8(3)"},
+  nas_bio:  {label:"New biological made by biotechnology", hint:"Recombinant DNA, controlled gene expression, monoclonal antibodies", short:"New biotech medicine", newProduct:true, biotech:true, basis:"8(3)"},
+  bio_other:{label:"Other new biological", hint:"e.g. plasma-derived product, non-recombinant vaccine", short:"New biological", newProduct:true, basis:"8(3)"},
+  atmp:     {label:"Advanced therapy (ATMP)", hint:"Gene therapy, somatic cell therapy, tissue-engineered product", short:"ATMP", newProduct:true, atmp:true, basis:"8(3)"},
+  generic:  {label:"Generic", hint:"Same active substance, strength and form as a reference; bioequivalence shown", short:"Generic", ref:true, basis:"10(1)"},
+  hybrid:   {label:"Hybrid", hint:"Like a generic, but with a different strength, form, route or indication, or bioequivalence cannot be shown", short:"Hybrid", ref:true, basis:"10(3)"},
+  biosimilar:{label:"Biosimilar", hint:"Similar to an authorised biological reference medicine", short:"Biosimilar", ref:true, basis:"10(4)"},
+  wel:      {label:"Well-established use", hint:"Active substance in systematic, documented medicinal use in the EU for at least 10 years", short:"Well-established use", basis:"10a"},
+  fdc:      {label:"New fixed-dose combination", hint:"Known active substances not yet combined in an authorised product", short:"Fixed combination", newProduct:true, basis:"10b"},
+  informed: {label:"Informed consent (duplicate)", hint:"Same product as an existing MA, using that holder's dossier with consent", short:"Informed consent", ref:true, basis:"10c"},
+  herbal:   {label:"Traditional herbal medicine", hint:"30 years of traditional use, including 15 in the EU", short:"Traditional herbal", basis:"16a"},
+  homeo:    {label:"Homeopathic (simplified registration)", hint:"Oral or external use, sufficient dilution, no therapeutic indication", short:"Homeopathic", basis:"14"}
+};
+const AREAS = {cancer:"Cancer", diabetes:"Diabetes", neuro:"Neurodegenerative disorder", immune:"Autoimmune disease or immune dysfunction", viral:"Viral disease", hiv:"HIV/AIDS"};
+
+const BASES = {
+  "8(3)":  {name:"Full (stand-alone) application", ref:"Article 8(3), Directive 2001/83/EC",
+            dossier:["Module 1: EU administrative information and product information","Module 2: overviews and summaries","Module 3: full quality data","Module 4: complete non-clinical study reports","Module 5: complete clinical study reports"]},
+  "10(1)": {name:"Generic application", ref:"Article 10(1), Directive 2001/83/EC",
+            dossier:["Modules 1–3 in full","Module 2 overviews justifying the generic approach","Bioequivalence study (or justified biowaiver) in Module 5","No own non-clinical or clinical efficacy/safety data: relies on the reference product's dossier"]},
+  "10(3)": {name:"Hybrid application", ref:"Article 10(3), Directive 2001/83/EC",
+            dossier:["Modules 1–3 in full","Bridging non-clinical and/or clinical data for the differences from the reference (strength, form, route, indication)","Reliance on the reference product's data for the rest"]},
+  "10(4)": {name:"Biosimilar application", ref:"Article 10(4), Directive 2001/83/EC",
+            dossier:["Modules 1–3 in full, with an extensive analytical comparability exercise against the reference","Comparative non-clinical data as required by EMA biosimilar guidelines","Comparative clinical data (PK/PD; efficacy trials where needed) in Module 5"]},
+  "10a":   {name:"Well-established use (bibliographic) application", ref:"Article 10a, Directive 2001/83/EC",
+            dossier:["Modules 1–3 in full","Published scientific literature replaces own non-clinical and clinical studies","Evidence of at least 10 years of systematic, documented medicinal use in the EU with recognised efficacy and acceptable safety"]},
+  "10b":   {name:"Fixed-combination application", ref:"Article 10b, Directive 2001/83/EC",
+            dossier:["Modules 1–3 for the combination","New non-clinical and clinical data on the combination","No need to resubmit data on each individual active substance"]},
+  "10c":   {name:"Informed consent application", ref:"Article 10c, Directive 2001/83/EC",
+            dossier:["Module 1 with the letter of consent from the reference MAH","Cross-reference to Modules 2–5 of the reference dossier, which must stay identical"]},
+  "16a":   {name:"Traditional herbal registration", ref:"Articles 16a–16i, Directive 2001/83/EC",
+            dossier:["Modules 1–3","Bibliographic review of safety data with an expert report","Evidence of 30 years' traditional use, including 15 years in the EU; no efficacy trials needed"]},
+  "14":    {name:"Simplified homeopathic registration", ref:"Article 14, Directive 2001/83/EC",
+            dossier:["Module 1 and quality documentation","Evidence of oral or external use, sufficient dilution (≥1:10,000 of the mother tincture) and no therapeutic indication on the label"]}
+};
+
+/* ---------- strategy analysis ---------- */
+function analyse(a){
+  const T = TYPES[a.type] || TYPES.nas_chem;
+  const sub = D(a.subDate) || addM(new Date(), 6);
+  const areas = new Set(a.areas || []);
+  const mandatoryArea = [...areas].filter(x => AREAS[x]);
+  const isNew = !!T.newProduct && a.type!=="fdc";
+  const isNAS = ["nas_chem","nas_bio","bio_other","atmp"].includes(a.type);
+  const orphanOn = (a.orphan==="granted" || a.orphan==="planned") && isNAS;
+  const flags = [];
+
+  /* --- orphan --- */
+  let orphan = {status:"na", title:"Orphan designation", why:"Orphan designation applies to new medicines for rare conditions; not relevant for this product type.", ref:"Regulation (EC) No 141/2000"};
+  if (isNAS){
+    if (a.orphan==="granted"){
+      orphan = {status:"ok", title:"Orphan designation: granted", ref:"Regulation (EC) No 141/2000, Art. 3 and 5",
+        why:"The designation gives access to the centralised procedure, protocol assistance and fee reductions. At marketing authorisation the COMP re-checks the criteria, including significant benefit over existing methods; keep that evidence ready.",
+        actions:["Prepare the significant-benefit justification for the COMP review at MA stage","Request protocol assistance (scientific advice for orphans) with fee reductions","Check similarity with any authorised orphan for the same condition: its market exclusivity can block you"]};
+    } else if (a.orphan==="planned"){
+      const prevOk = a.prev!=null && a.prev!=="" && +a.prev <= 5;
+      const serious = !!a.serious;
+      const benefit = a.satisfactory==="none" || a.satisfactory==="exists_benefit";
+      const crit = [
+        {ok:serious, t:"Life-threatening or chronically debilitating condition"},
+        {ok:prevOk, t:a.prev!=null&&a.prev!==""?`Prevalence ${a.prev} in 10,000 (limit: 5 in 10,000)`:"Prevalence not entered (limit: 5 in 10,000)"},
+        {ok:benefit, t: a.satisfactory==="none"?"No satisfactory method of diagnosis, prevention or treatment authorised":a.satisfactory==="exists_benefit"?"Satisfactory methods exist, but significant benefit is expected":"Satisfactory methods exist and no significant benefit is expected"}
+      ];
+      const all = crit.every(c=>c.ok);
+      orphan = {status: all?"ok":"warn", title: all?"Orphan designation: eligible to apply":"Orphan designation: criteria not all met", crit, ref:"Regulation (EC) No 141/2000, Art. 3",
+        why: all ? "All three criteria appear met. Apply to EMA's COMP before submitting the marketing authorisation application; the opinion comes within 90 days of a valid application, followed by a Commission decision."
+                 : "One or more criteria are not met on the information given. Orphan status could still rest on the alternative 'insufficient return on investment' criterion, which is rarely used.",
+        actions: all ? ["Submit the designation application early, ideally before pivotal trials","Request protocol assistance","Plan for orphan market exclusivity in the protection strategy"] : ["Re-check prevalence sources (Orphanet, registries) and the condition definition","Consider whether a medically plausible subset is defensible"]};
+    } else {
+      orphan.status = "na"; orphan.why = "No orphan designation planned.";
+    }
+  }
+
+  /* --- procedure --- */
+  let proc;
+  const several = a.markets==="several" || a.markets==="all";
+  if (a.type==="herbal" || a.type==="homeo"){
+    proc = {code: a.markets==="one" ? "NAT" : a.existingNational ? "MRP" : "DCP", status:"ok",
+      why:[`${T.short} products are registered nationally; the centralised procedure is not available for this route.`, a.markets==="one" ? "One target country: a purely national registration." : a.existingNational ? "Already registered in a Member State: extend it with the mutual recognition procedure." : "Several countries and no existing registration: the decentralised procedure."]};
+  } else if (T.atmp || T.biotech || (a.type==="biosimilar" && a.refBiotech!==false)){
+    proc = {code:"CP", status:"req", mandatory:true,
+      why:[T.atmp ? "Advanced therapy medicinal products must use the centralised procedure (Annex, point 1a, Regulation (EC) No 726/2004)." :
+           a.type==="biosimilar" ? "The reference medicine is biotechnology-derived, so its biosimilar must also go through the centralised procedure (Annex, point 1)." :
+           "Medicines developed by recombinant DNA technology, controlled gene expression or monoclonal antibody methods must use the centralised procedure (Annex, point 1, Regulation (EC) No 726/2004)."]};
+  } else if (isNAS && (mandatoryArea.length || orphanOn)){
+    const reasons = [];
+    if (mandatoryArea.length) reasons.push(`A new active substance to treat ${mandatoryArea.map(x=>AREAS[x].toLowerCase()).join(", ")} must use the centralised procedure (Annex, point 3).`);
+    if (orphanOn) reasons.push(a.orphan==="granted" ? "Designated orphan medicines must use the centralised procedure (Annex, point 4)." : "If orphan designation is granted, the centralised procedure becomes mandatory (Annex, point 4).");
+    proc = {code:"CP", status:"req", mandatory:true, why:reasons};
+  } else if (isNAS){
+    proc = {code:"CP", status:"ok", optional:true,
+      why:["A new active substance not authorised in the EU may opt into the centralised procedure (Art. 3(2)(a), Regulation (EC) No 726/2004).", a.markets==="all" ? "For an EU-wide launch, one centralised authorisation is usually the most efficient route." : "For a few countries, the decentralised procedure is a valid alternative."],
+      alt: a.markets==="all" ? null : (a.existingNational?"MRP":"DCP")};
+  } else if (T.ref && a.refRoute==="CAP" && a.type!=="informed"){
+    proc = {code: a.markets==="all" ? "CP" : (a.existingNational?"MRP":(a.markets==="one"?"NAT":"DCP")), status:"ok", optional:true,
+      why:["The reference medicine is centrally authorised, so the generic or hybrid has automatic access to the centralised procedure (Art. 3(3), Regulation (EC) No 726/2004).", a.markets==="all" ? "For EU-wide supply, the centralised route gives one authorisation and one product information." : "National routes (DCP, MRP or national) are also open, with product information aligned to the reference."],
+      alt: a.markets==="all" ? (a.existingNational?"MRP":"DCP") : "CP"};
+  } else if (a.type==="fdc" && a.innovation){
+    proc = {code: a.markets==="all" ? "CP" : (a.existingNational?"MRP":"DCP"), status:"ok", optional:true,
+      why:["The combination may qualify for optional centralised access as a significant innovation or in the interest of patients at EU level (Art. 3(2)(b)); EMA confirms eligibility on request.", "National routes remain open."], alt: a.markets==="all" ? "DCP" : "CP"};
+  } else if (a.type==="informed"){
+    proc = {code: a.refRoute==="CAP" ? "CP" : (a.markets==="one" ? "NAT" : a.existingNational ? "MRP" : "DCP"), status:"ok",
+      why:[a.refRoute==="CAP" ? "An informed-consent application to a centrally authorised product follows the centralised procedure." : "Follows the route of the reference product's national authorisations."]};
+  } else {
+    const code = a.markets==="one" ? "NAT" : a.existingNational ? "MRP" : "DCP";
+    proc = {code, status:"ok",
+      why:[ code==="NAT" ? "One target country: a purely national application." : code==="MRP" ? "The product is already authorised in one Member State: other countries recognise that authorisation through the mutual recognition procedure." : "Several countries and no existing authorisation: the decentralised procedure, led by a reference Member State of your choice."]};
+  }
+  const PROCS = {
+    CP:{name:"Centralised procedure", body:"EMA (CHMP) → European Commission", scope:"One authorisation valid in all EU/EEA countries"},
+    DCP:{name:"Decentralised procedure", body:"Reference Member State + concerned Member States", scope:"Simultaneous national authorisations in the chosen countries"},
+    MRP:{name:"Mutual recognition procedure", body:"Reference Member State's existing MA recognised by others", scope:"National authorisations in the chosen countries"},
+    NAT:{name:"National procedure", body:"One national competent authority", scope:"One country only"}
+  };
+  proc = Object.assign(proc, PROCS[proc.code]);
+
+  /* --- legal basis --- */
+  const basis = Object.assign({code:T.basis}, BASES[T.basis]);
+
+  /* --- reference product protection (generic / hybrid / biosimilar) --- */
+  let refProt = null;
+  if (["generic","hybrid","biosimilar"].includes(a.type)){
+    const ref = D(a.refDate);
+    if (ref){
+      const dpEnd = addY(ref,8), mpEnd = addY(ref, a.refExtraYear ? 11 : 10);
+      refProt = {ref, dpEnd, mpEnd};
+      if (sub < dpEnd){
+        flags.push({lvl:"block", t:`Planned submission (${iso(sub)}) is before the reference product's 8-year data protection ends (${iso(dpEnd)}). The application cannot be validated before then.`});
+      }
+      basis.timing = `Earliest submission ${iso(dpEnd)} (8 years after the reference's first EU authorisation). Earliest marketing ${iso(mpEnd)} (${a.refExtraYear?"11":"10"} years), subject to patents and SPCs.`;
+    } else {
+      flags.push({lvl:"warn", t:"Enter the reference product's first EU authorisation date to check data and market protection."});
+    }
+  }
+
+  /* --- PRIME / accelerated / CMA / exceptional --- */
+  const centr = proc.code==="CP";
+  const prime = {title:"PRIME (priority medicines)", ref:"EMA PRIME scheme", status:"na", why:"PRIME supports new medicines that may address an unmet medical need. Not relevant for this product type."};
+  if (isNAS && centr){
+    if (a.unmet==="yes" && a.earlyData==="clinical"){ prime.status="ok"; prime.title="PRIME: eligible to apply"; prime.why="Unmet medical need with early clinical data showing potential major therapeutic advantage fits the PRIME criteria. Benefits: early CHMP rapporteur, kick-off meeting, iterative scientific advice and expected eligibility for accelerated assessment."; }
+    else if (a.unmet==="yes" && a.earlyData==="nonclinical" && a.sme){ prime.status="ok"; prime.title="PRIME: early entry possible"; prime.why="SMEs and academic applicants can apply earlier, on compelling non-clinical data plus tolerability data from first-in-human trials."; }
+    else if (a.unmet==="yes"){ prime.status="warn"; prime.title="PRIME: not yet"; prime.why="The unmet need is there, but PRIME needs early clinical evidence of a major therapeutic advantage (or, for SMEs and academia, strong non-clinical data). Re-assess after proof-of-concept data."; }
+    else if (a.unmet==="partly"){ prime.status="warn"; prime.title="PRIME: unlikely"; prime.why="PRIME is reserved for medicines targeting an unmet need with major therapeutic advantage; a partial unmet need rarely qualifies."; }
+    else { prime.status="no"; prime.title="PRIME: not eligible"; prime.why="Without an unmet medical need, PRIME does not apply."; }
+  }
+  const acc = {title:"Accelerated assessment", ref:"Art. 14(9), Regulation (EC) No 726/2004", status:"na", why:"Only available in the centralised procedure for new medicines."};
+  if (centr && (isNAS || a.type==="fdc")){
+    if (prime.status==="ok"){ acc.status="ok"; acc.title="Accelerated assessment: strong candidate"; acc.why="Products of major public health interest and therapeutic innovation can be assessed in 150 days instead of 210. PRIME products are expected to qualify. Request it 2–3 months before submission."; }
+    else if (a.unmet==="yes" || a.unmet==="partly"){ acc.status="warn"; acc.title="Accelerated assessment: possible"; acc.why="Justify major public health interest and therapeutic innovation in a request 2–3 months before submission. The CHMP can revert to the standard timetable during assessment."; }
+    else { acc.status="no"; acc.title="Accelerated assessment: unlikely"; acc.why="Without unmet need or therapeutic innovation, expect the standard 210-day timetable."; }
+  }
+  const cma = {title:"Conditional marketing authorisation", ref:"Regulation (EC) No 507/2006", status:"na", why:"Applies to new medicines in the centralised procedure."};
+  const exc = {title:"Authorisation under exceptional circumstances", ref:"Art. 14(8), Regulation (EC) No 726/2004", status:"na", why:"Applies when comprehensive data can never be provided."};
+  if (centr && isNAS){
+    const scope = a.serious || orphanOn || a.emergency;
+    if (a.dataStatus==="complete"){ cma.status="no"; cma.title="Conditional MA: not needed"; cma.why="Comprehensive data will be available at submission, so a standard authorisation applies."; exc.status="no"; exc.why="Not needed: comprehensive data will be available."; }
+    else if (a.dataStatus==="pending"){
+      if (scope && a.unmet!=="no"){ cma.status="ok"; cma.title="Conditional MA: candidate"; cma.why="Seriously debilitating or life-threatening disease (or orphan or emergency use), unmet need, positive benefit-risk expected, and confirmatory data likely to follow: the four CMA conditions can be met. Valid one year, renewable, with specific obligations."; }
+      else { cma.status="warn"; cma.title="Conditional MA: unlikely"; cma.why="CMA needs a seriously debilitating or life-threatening disease (or orphan or emergency threat) and an unmet need that immediate availability would address."; }
+      exc.status="no"; exc.why="Data will become comprehensive, so conditional MA is the right tool rather than exceptional circumstances.";
+    } else {
+      exc.status = (a.orphan!=="no" || a.serious) ? "ok" : "warn"; exc.title = "Exceptional circumstances: candidate";
+      exc.why="Comprehensive efficacy and safety data cannot be provided (e.g. an extremely rare condition, or collecting data would be unethical). Specific obligations are reviewed annually.";
+      cma.status="no"; cma.why="Data will never be comprehensive, so exceptional circumstances fits better than CMA.";
+    }
+  }
+
+  /* --- paediatrics --- */
+  let paed = {status:"na", title:"Paediatric investigation plan", ref:"Regulation (EC) No 1901/2006"};
+  const paedExempt = ["generic","hybrid","biosimilar","wel","herbal","homeo","informed"].includes(a.type);
+  if (paedExempt){
+    paed.status="na"; paed.title="PIP: not required"; paed.why = a.type==="informed" ? "The application relies on the reference product's dossier; no separate PIP obligation is expected." : "Generics, hybrids, biosimilars, well-established use, homeopathic and traditional herbal products are exempt from the PIP requirement (Art. 9).";
+  } else if (a.paed==="adult_only"){
+    paed.status="ok"; paed.title="PIP: waiver"; paed.why="The condition does not occur in children, or the product is likely ineffective or unsafe in them. Check EMA's class waiver list first; otherwise apply for a product-specific waiver. The MA application must include the EMA decision.";
+    paed.actions=["Check the EMA class waiver list for the condition","Otherwise request a product-specific waiver, no later than completion of adult PK studies"];
+  } else {
+    paed.status="req"; paed.title="PIP: required"; paed.why="New medicines not yet authorised in the EU must include results of an agreed paediatric investigation plan, a waiver or a deferral (Art. 7). Without the PDCO-agreed decision the MA application is not valid.";
+    paed.actions=["Submit the PIP to the PDCO no later than completion of adult pharmacokinetic studies (Art. 16)","Request deferral of paediatric studies where adult data should come first","Plan the compliance check before MA submission","Reward on completion: 6-month SPC extension (current rules) — or 2 extra years of orphan market exclusivity for orphans"];
+  }
+
+  /* --- HTA joint clinical assessment --- */
+  let hta = {status:"na", title:"EU joint clinical assessment (JCA)", ref:"Regulation (EU) 2021/2282", why:"Joint clinical assessments cover new active substances and ATMPs authorised centrally; not in scope for this product type."};
+  if (centr && isNAS){
+    const onc = areas.has("cancer");
+    let start = null, what = "";
+    if (T.atmp){ start = D("2025-01-12"); what = "advanced therapy medicinal products"; }
+    else if (onc){ start = D("2025-01-12"); what = "new active substances for cancer"; }
+    else if (orphanOn){ start = D("2028-01-13"); what = "designated orphan medicines"; }
+    else { start = D("2030-01-13"); what = "all centrally authorised new active substances"; }
+    if (sub >= start){ hta.status="req"; hta.title="JCA: required"; hta.why=`Since ${fmtLong(start)}, ${what} with marketing authorisation applications submitted from that date undergo an EU joint clinical assessment. The JCA dossier is due in parallel with the EMA assessment, based on the PICO scoping set by Member States.`; hta.actions=["Request joint scientific consultation (JSC) alongside EMA scientific advice","Prepare for multiple PICOs: comparators differ across Member States","Plan the JCA dossier submission to run in parallel with the CHMP review"]; }
+    else { hta.status="warn"; hta.title=`JCA: from ${fmtLong(start)}`; hta.why=`JCAs extend to ${what} from ${fmtLong(start)}. Your planned submission falls before that, so national HTA applies, unless timelines slip.`; }
+  } else if (centr && a.type==="fdc"){
+    hta.why = "Joint clinical assessments cover new active substances; a combination of known substances is generally out of scope (check new-indication rules).";
+  }
+
+  /* --- approval timeline --- */
+  const cs1 = +a.clockStop1 || (prime.status==="ok"?60:90), cs2 = +a.clockStop2 || 30;
+  const tl = [];
+  const push = (d, t, s, key) => tl.push({d, t, s, key});
+  let decision;
+  if (proc.code==="CP"){
+    const accel = acc.status==="ok";
+    push(sub, "Submission to EMA", "Validation and start on the next published start date.", true);
+    const st = addD(sub, 28); push(st, "Day 1: procedure starts", "Rapporteur and co-rapporteur begin assessment.");
+    if (accel){
+      const d90 = addD(st, 90); push(d90, "Day 90: list of questions", `Clock stop (${cs1} days planned).`);
+      const r = addD(d90, cs1); const op = addD(r, 60); push(op, "Day 150: CHMP opinion", "Accelerated timetable.", true);
+      decision = addD(op, 67); push(decision, "Commission decision", "Within 67 days of the opinion. Valid in all EU/EEA countries.", true);
+    } else {
+      const d120 = addD(st,120); push(d120, "Day 120: list of questions", `Clock stop (${cs1} days planned).`);
+      const r1 = addD(d120, cs1); const d180 = addD(r1, 60); push(d180, "Day 180: list of outstanding issues", `Clock stop (${cs2} days planned); oral explanation possible.`);
+      const r2 = addD(d180, cs2); const op = addD(r2, 30); push(op, "Day 210: CHMP opinion", "Positive, negative, or re-examination on request.", true);
+      decision = addD(op, 67); push(decision, "Commission decision", "Within 67 days of the opinion. Valid in all EU/EEA countries.", true);
+    }
+    if (hta.status==="req") push(addD(decision, 30), "JCA report published", "Within 30 days of the Commission decision.");
+  } else if (proc.code==="DCP"){
+    push(sub, "Submission to RMS and CMSs", "Validation, then the RMS starts the procedure.", true);
+    const st = addD(sub, 14); push(st, "Day 0: procedure starts", "");
+    const d70 = addD(st, 70); push(d70, "Day 70: preliminary assessment report", "Circulated to CMSs.");
+    const d105 = addD(st, 105); push(d105, "Day 105: clock stop", `Responses to consolidated questions (${cs1} days planned).`);
+    const r = addD(d105, cs1); const d120 = addD(r, 15); push(d120, "Day 120: draft assessment report", "The procedure can close here if consensus is reached.");
+    const d210 = addD(d120, 90); push(d210, "Day 210: end of procedure", "Agreement on product information; referral to CMDh if disagreement.", true);
+    decision = addD(d210, 30); push(decision, "National authorisations", "Granted within 30 days in each country.", true);
+  } else if (proc.code==="MRP"){
+    push(sub, "Request to RMS to update its assessment report", "RMS has up to 90 days.", true);
+    const st = addD(sub, 90); push(st, "Day 0: MRP starts", "CMSs review the RMS assessment.");
+    const d90 = addD(st, 90); push(d90, "Day 90: end of procedure", "Recognition by CMSs, or referral to CMDh.", true);
+    decision = addD(d90, 30); push(decision, "National authorisations", "Within 30 days in each country.", true);
+  } else {
+    push(sub, "Submission to the national authority", "", true);
+    const st = addD(sub, 14);
+    decision = addD(st, 210 + cs1); push(decision, "National authorisation", `210-day statutory timetable plus a ${cs1}-day clock stop.`, true);
+  }
+  push(addD(decision, 180), "Pricing & reimbursement (typical)", "National decisions within 180 days of a complete request in most countries (Transparency Directive).");
+  tl.sort((x,y) => x.d - y.d);
+
+  /* --- launch constraints --- */
+  let launch = decision;
+  if (refProt) launch = max(decision, refProt.mpEnd);
+
+  /* --- own protection (new products) --- */
+  let own = null;
+  if (isNAS || a.type==="fdc" || a.type==="wel"){
+    if (a.type==="wel"){ own = {note:"Well-established use products get no data or market protection of their own; a 1-year data exclusivity can apply to a new indication backed by significant studies (Art. 10(5))."}; }
+    else if (a.type==="fdc"){ own = {note:"Whether a new fixed combination earns its own 8+2(+1) protection depends on the global marketing authorisation rules (same MAH, same active substances). Get a legal view before relying on it."}; }
+    else {
+      const dp = addY(decision,8), mp = addY(decision, a.newIndication?11:10);
+      own = {dp, mp, oe: orphanOn ? addY(decision, 10 + (a.paed==="relevant"?2:0)) : null};
+    }
+  }
+
+  /* --- flags --- */
+  if (isNAS && a.markets==="one" && proc.mandatory) flags.push({lvl:"warn", t:"You target one country, but the centralised procedure is mandatory: the authorisation will cover all EU/EEA countries."});
+  if (a.type==="fdc" && !a.innovation) flags.push({lvl:"info", t:"Fixed combinations need clinical data on the combination; consider EMA or national scientific advice on the development plan."});
+  if (isNAS && proc.code==="CP") flags.push({lvl:"info", t:"Request a pre-submission meeting and submit the eligibility request to EMA 7–18 months before the planned submission date; appoint rapporteurs ahead of time."});
+  if (a.type==="biosimilar") flags.push({lvl:"info", t:"Interchangeability: EMA and HMA consider EU-approved biosimilars interchangeable with their reference product. Substitution policy stays national."});
+  if (["generic","hybrid"].includes(a.type) && a.refRoute==="CAP") flags.push({lvl:"info", t:"Align product information with the reference's current SmPC; patent-protected indications may be carved out where national law allows."});
+
+  /* --- scientific advice --- */
+  const advice = {title:"Scientific advice", ref:"Art. 57(1)(n), Regulation (EC) No 726/2004", status: isNAS||a.type==="fdc"||a.type==="biosimilar"||a.type==="hybrid" ? "ok" : "no",
+    why: isNAS ? (orphanOn ? "Protocol assistance (scientific advice for orphans) is strongly recommended before pivotal trials, with fee reductions." : "EMA or national scientific advice on the pivotal development is strongly recommended; pair it with HTA joint scientific consultation where JCA applies.")
+       : a.type==="biosimilar" ? "Advice on the comparability exercise and the need for clinical efficacy trials is common practice."
+       : a.type==="hybrid" ? "Useful to agree the bridging data package."
+       : a.type==="fdc" ? "Useful to agree the clinical programme for the combination." : "Rarely needed for this application type."};
+
+  /* --- headline --- */
+  const head = [proc.name + (proc.mandatory?" (mandatory)":""), basis.ref.replace(", Directive 2001/83/EC","")];
+  if (orphan.status==="ok") head.push("Orphan");
+  if (prime.status==="ok") head.push("PRIME");
+  if (cma.status==="ok") head.push("Conditional MA");
+  if (exc.status==="ok") head.push("Exceptional circumstances");
+  if (hta.status==="req") head.push("EU JCA");
+
+  return {T, sub, proc, basis, orphan, prime, acc, cma, exc, paed, hta, advice, tl, decision, launch, refProt, own, flags, head, isNAS, centr};
+}
+function fmtLong(d){ return d.toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}); }
+
+/* ---------- protection & market-entry calculator ---------- */
+function protection(p){
+  const ma = D(p.ma); if (!ma) return null;
+  const bars = []; const notes = [];
+  const reform = p.regime==="reform";
+  let dpEnd, mpEnd, oeEnd = null, spcEnd = null, patEnd = null, paedEnd = null;
+  if (!reform){
+    dpEnd = addY(ma, 8);
+    mpEnd = addY(ma, p.newInd ? 11 : 10);
+    bars.push({k:"dp", t:"Data protection", a:ma, b:dpEnd, note:"8 years: no generic/biosimilar application can rely on the data."});
+    bars.push({k:"mp", t:"Market protection", a:dpEnd, b:addY(ma,10), note:"2 years: generics may be authorised but not marketed."});
+    if (p.newInd) bars.push({k:"ext", t:"+1 year (new indication)", a:addY(ma,10), b:mpEnd, note:"New indication with significant clinical benefit authorised within the first 8 years."});
+    if (p.orphan){ oeEnd = addY(ma, 10 + (p.pip ? 2 : 0)); bars.push({k:"oe", t:"Orphan market exclusivity", a:ma, b:oeEnd, note:`10 years${p.pip?" + 2 years for PIP compliance":""}: blocks similar medicines for the same orphan indication. May drop to 6 years if criteria no longer met after year 5.`}); }
+  } else {
+    dpEnd = addY(ma, 8 + (p.tev?1:0));
+    let mpYears = 1 + (p.newInd?1:0) + (p.unmetExt?1:0);
+    let total = 8 + (p.tev?1:0) + mpYears;
+    const cap = p.tev ? 12 : 11;
+    if (total > cap){ mpYears -= (total-cap); total = cap; }
+    mpEnd = addY(ma, total);
+    bars.push({k:"dp", t:"Data protection", a:ma, b:dpEnd, note:`8 years${p.tev?" + 1 year from a transferable exclusivity voucher":""}.`});
+    bars.push({k:"mp", t:"Market protection (base)", a:dpEnd, b:addY(dpEnd,1), note:"1 year baseline (reduced from 2)."});
+    if (mpYears>1) bars.push({k:"ext", t:`Extensions (+${mpYears-1} y)`, a:addY(dpEnd,1), b:mpEnd, note:[p.newInd?"+1 y new indication with significant clinical benefit":"", p.unmetExt?"+1 y unmet need, or new active substance with comparative trials / EU-first filing / multi-country trials":""].filter(Boolean).join("; ")+`. Overall cap ${cap} years.`});
+    if (p.orphan){ const base = p.breakthrough ? 11 : 9; oeEnd = addY(ma, base + (p.newOrphanInd?1:0)); bars.push({k:"oe", t:"Orphan market exclusivity", a:ma, b:oeEnd, note:`${base} years${p.breakthrough?" (breakthrough orphan)":""}${p.newOrphanInd?" + 1 year for a new orphan indication":""}.`}); }
+    notes.push("Reform figures are indicative: the package was adopted by the Council on 28 September 2026 and awaits the European Parliament's final vote. The new rules apply to applications filed after the regulation applies (expected around 2028); existing MAs keep current rules.");
+  }
+  const pf = D(p.patentFiling);
+  if (pf){
+    patEnd = addY(pf, 20);
+    bars.push({k:"pat", t:"Basic patent", a:pf, b:patEnd, note:"20 years from filing."});
+    const diffY = yearsBetween(pf, ma);
+    let spcY = Math.min(5, diffY - 5);
+    if (spcY > 0){
+      spcEnd = new Date(patEnd.getTime() + spcY*365.2425*864e5);
+      const cap15 = addY(ma, 15); if (spcEnd > cap15) spcEnd = cap15;
+      if (spcEnd > patEnd){
+        bars.push({k:"spc", t:"SPC", a:patEnd, b:spcEnd, note:`Term = (first EU MA − patent filing) − 5 years = ${(diffY-5).toFixed(1)} years${diffY-5>5?", capped at 5":""}; total exclusivity limited to 15 years from the first EU MA.`});
+        if (p.pip && !(p.orphan && !reform)){ paedEnd = addM(spcEnd, 6); bars.push({k:"paed", t:"Paediatric extension", a:spcEnd, b:paedEnd, note:"6 months for PIP compliance (Art. 36, Regulation (EC) No 1901/2006)."}); }
+      } else spcEnd = null;
+    } else notes.push("No SPC: the first EU authorisation came less than 5 years after the patent filing.");
+  }
+  const ipEnd = paedEnd || spcEnd || patEnd;
+  const fileGen = dpEnd;
+  const launchGen = max(mpEnd, ipEnd);
+  const launchSimilarOrphan = oeEnd ? max(oeEnd, ipEnd) : null;
+  const first = min(ma, pf), last = max(mpEnd, oeEnd, ipEnd, addY(ma, 12));
+  return {ma, dpEnd, mpEnd, oeEnd, patEnd, spcEnd, paedEnd, ipEnd, fileGen, launchGen, launchSimilarOrphan, bars, notes, first, last};
+}
+
+return {D, addD, addM, addY, iso, TYPES, AREAS, BASES, analyse, protection, fmtLong};
+})();
+
+
+</script>
+<script>
+(function(){
+"use strict";
+const $ = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const {D, addD, addM, addY, iso, TYPES, AREAS} = PF;
+const fmt = d => d ? d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}) : "—";
+const store = {
+  get(k,d){ try{ const v = localStorage.getItem("pf."+k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{ localStorage.setItem("pf."+k, JSON.stringify(v)); }catch(e){} }
+};
+const STATUS_TXT = {req:"Required", ok:"Applies", warn:"Check", block:"Blocked", no:"No", na:"N/A"};
+
+/* ---------------- examples ---------------- */
+const EXAMPLES = [
+  {id:"mab", label:"Rare paediatric cancer antibody", a:{name:"Example: monoclonal antibody for a rare paediatric brain tumour", type:"nas_bio", areas:["cancer"], serious:true, orphan:"planned", prev:"0.3", satisfactory:"none", unmet:"yes", emergency:false, earlyData:"clinical", sme:false, dataStatus:"pending", paed:"relevant", markets:"all", existingNational:false, subDate:"2027-06-01", patentFiling:"2017-05-10", newIndication:false}},
+  {id:"gene", label:"Gene therapy, ultra-rare disease", a:{name:"Example: AAV gene therapy for an ultra-rare metabolic disorder", type:"atmp", areas:[], serious:true, orphan:"granted", prev:"0.05", satisfactory:"none", unmet:"yes", earlyData:"clinical", sme:true, dataStatus:"never", paed:"relevant", markets:"all", subDate:"2027-02-15", patentFiling:"2019-09-01"}},
+  {id:"generic", label:"Generic antidiabetic", a:{name:"Example: generic DPP-4 inhibitor tablets", type:"generic", refRoute:"CAP", refDate:"2016-09-15", refExtraYear:false, areas:["diabetes"], markets:"all", existingNational:false, subDate:"2026-12-01", paed:"relevant"}},
+  {id:"bios", label:"Biosimilar anti-TNF", a:{name:"Example: biosimilar anti-TNF monoclonal antibody", type:"biosimilar", refRoute:"CAP", refDate:"2003-09-08", refBiotech:true, areas:["immune"], markets:"all", subDate:"2027-01-15", paed:"relevant"}},
+  {id:"fdc", label:"Antihypertensive combination", a:{name:"Example: fixed-dose combination of two known antihypertensives", type:"fdc", innovation:false, areas:[], serious:false, unmet:"no", dataStatus:"complete", paed:"adult_only", markets:"several", existingNational:false, subDate:"2027-03-01"}},
+  {id:"herbal", label:"Traditional herbal remedy", a:{name:"Example: valerian root traditional herbal sleep aid", type:"herbal", markets:"one", subDate:"2027-01-10"}}
+];
+const BLANK = {name:"", type:"nas_chem", areas:[], serious:false, orphan:"no", prev:"", satisfactory:"none", unmet:"no", emergency:false, earlyData:"none", sme:false, dataStatus:"complete", paed:"relevant", markets:"all", existingNational:false, subDate:"", refRoute:"CAP", refDate:"", refExtraYear:false, refBiotech:true, innovation:false, patentFiling:"", newIndication:false};
+let A = Object.assign({}, BLANK, store.get("answers", null) || EXAMPLES[0].a);
+let exampleId = store.get("exampleId", store.get("answers", null) ? null : "mab");
+if (!A.subDate) A.subDate = iso(addM(new Date(), 9));
+let R = PF.analyse(A);
+
+/* ---------------- questions ---------------- */
+function seg(key, opts){ return `<div class="seg" role="group">${opts.map(([v,l]) => `<button type="button" data-k="${key}" data-v="${v}" aria-pressed="${String(A[key])===String(v)}">${esc(l)}</button>`).join("")}</div>`; }
+function chk(key, text){ return `<label class="chk"><input type="checkbox" id="q-${key}" data-ck="${key}" ${A[key]?"checked":""}><span>${text}</span></label>`; }
+function renderQuestions(){
+  const T = TYPES[A.type];
+  const isNAS = ["nas_chem","nas_bio","bio_other","atmp"].includes(A.type);
+  const isNewish = isNAS || A.type==="fdc";
+  const paedExempt = ["generic","hybrid","biosimilar","wel","herbal","homeo","informed"].includes(A.type);
+  let n = 0; const step = (title, body) => `<section class="card step"><div class="step-h"><span class="step-n">${++n}</span><h2>${title}</h2></div>${body}</section>`;
+  let html = `<div class="examples"><span class="eyebrow" style="margin-right:4px">Load a case</span>${EXAMPLES.map(e => `<button class="ex" type="button" data-ex="${e.id}" aria-pressed="${exampleId===e.id}">${esc(e.label)}</button>`).join("")}<button class="ex" type="button" data-ex="blank">Start blank</button></div>`;
+  html += step("The product", `
+    <div class="q"><label for="q-name">Working name</label><input type="text" id="q-name" data-tx="name" placeholder="e.g. PF-101 film-coated tablets" value="${esc(A.name)}"></div>
+    <div class="q"><span class="ql">What kind of application is it?</span>
+      <div class="types">${Object.entries(TYPES).map(([k,t]) => `<button class="type" type="button" data-k="type" data-v="${k}" aria-pressed="${A.type===k}"><b>${esc(t.label)}</b>${t.hint?`<span>${esc(t.hint)}</span>`:""}</button>`).join("")}</div></div>
+    ${T.ref ? `
+      <div class="q"><span class="ql">How is the reference medicine authorised?</span>${seg("refRoute",[["CAP","Centrally (EMA)"],["NAT","Nationally (MRP/DCP/national)"]])}</div>
+      <div class="row2">
+        <div class="q"><label for="q-refDate">Reference's first EU authorisation</label><input type="date" id="q-refDate" data-tx="refDate" value="${esc(A.refDate)}"></div>
+        <div class="q" style="justify-content:flex-end">${chk("refExtraYear","Reference earned the +1 year for a new indication")}</div>
+      </div>
+      ${A.type==="biosimilar" ? chk("refBiotech","The reference is biotechnology-derived (recombinant protein, monoclonal antibody)") : ""}` : ""}
+    ${A.type==="fdc" ? chk("innovation","The combination is a significant innovation or in the interest of patients at EU level") : ""}
+  `);
+  if (isNewish){
+    html += step("Disease and medical need", `
+      <div class="q"><span class="ql">Therapeutic area</span><span class="qh">These areas make the centralised procedure mandatory for a new active substance.</span>
+        <div class="seg">${Object.entries(AREAS).map(([k,l]) => `<button type="button" data-area="${k}" aria-pressed="${A.areas.includes(k)}">${esc(l)}</button>`).join("")}</div></div>
+      ${chk("serious","The disease is life-threatening or seriously / chronically debilitating")}
+      ${isNAS ? `<div class="q"><span class="ql">Orphan designation</span>${seg("orphan",[["granted","Already granted"],["planned","Planning to apply"],["no","No"]])}</div>` : ""}
+      ${isNAS && A.orphan==="planned" ? `<div class="row2">
+        <div class="q"><label for="q-prev">Prevalence (per 10,000 in the EU)</label><input type="number" id="q-prev" data-tx="prev" min="0" step="0.01" value="${esc(A.prev)}"></div>
+        <div class="q"><span class="ql">Existing satisfactory treatment?</span>${seg("satisfactory",[["none","None"],["exists_benefit","Yes, but we add significant benefit"],["exists_nobenefit","Yes"]])}</div></div>` : ""}
+      <div class="q"><span class="ql">Unmet medical need</span>${seg("unmet",[["yes","Yes, no satisfactory treatment"],["partly","Partly"],["no","No"]])}</div>
+      ${isNAS ? chk("emergency","Intended for a public health emergency recognised by the EU or WHO") : ""}
+    `);
+  }
+  if (isNAS){
+    html += step("Evidence", `
+      <div class="q"><span class="ql">Strongest evidence available today</span>${seg("earlyData",[["clinical","Early clinical data"],["nonclinical","Non-clinical only"],["none","Not yet"]])}</div>
+      ${chk("sme","Applicant is an SME or academic institution")}
+      <div class="q"><span class="ql">Will the data at submission be comprehensive?</span>${seg("dataStatus",[["complete","Yes, complete"],["pending","Not yet; confirmatory data will follow"],["never","Never possible (ultra-rare, ethics)"]])}</div>
+    `);
+  }
+  if (!paedExempt){
+    html += step("Children", `
+      <div class="q"><span class="ql">Is the condition relevant in children?</span>${seg("paed",[["relevant","Yes, or possibly"],["adult_only","No, adults only"]])}</div>
+    `);
+  }
+  html += step("Markets and dates", `
+    <div class="q"><span class="ql">Target markets</span>${seg("markets",[["one","One EU country"],["several","Several countries"],["all","EU-wide"]])}</div>
+    ${chk("existingNational","Already authorised in at least one EU country")}
+    <div class="row2">
+      <div class="q"><label for="q-subDate">Planned submission date</label><input type="date" id="q-subDate" data-tx="subDate" value="${esc(A.subDate)}"></div>
+      ${isNewish ? `<div class="q"><label for="q-patentFiling">Basic patent filing date (optional)</label><input type="date" id="q-patentFiling" data-tx="patentFiling" value="${esc(A.patentFiling)}"></div>` : ""}
+    </div>
+  `);
+  $("#qcol").innerHTML = html;
+  $$("#qcol [data-k]").forEach(b => b.addEventListener("click", () => { set(b.dataset.k, b.dataset.v); }));
+  $$("#qcol [data-area]").forEach(b => b.addEventListener("click", () => { const k=b.dataset.area; A.areas = A.areas.includes(k) ? A.areas.filter(x=>x!==k) : [...A.areas, k]; changed(true); }));
+  $$("#qcol [data-ck]").forEach(c => c.addEventListener("change", () => { A[c.dataset.ck] = c.checked; changed(false); }));
+  $$("#qcol [data-tx]").forEach(i => i.addEventListener(i.type==="date"?"change":"input", () => { A[i.dataset.tx] = i.value; changed(false); }));
+  $$("#qcol [data-ex]").forEach(b => b.addEventListener("click", () => loadExample(b.dataset.ex)));
+}
+function set(k, v){ A[k] = v; changed(true); }
+function changed(rerenderQ){
+  exampleId = null; store.set("exampleId", null);
+  store.set("answers", A);
+  if (rerenderQ) renderQuestions(); else $$("#qcol .ex").forEach(b => b.setAttribute("aria-pressed","false"));
+  update();
+}
+function loadExample(id){
+  if (id==="blank"){ A = Object.assign({}, BLANK, {subDate: iso(addM(new Date(), 9))}); exampleId = null; }
+  else { const e = EXAMPLES.find(x=>x.id===id); A = Object.assign({}, BLANK, JSON.parse(JSON.stringify(e.a))); exampleId = id; }
+  store.set("answers", A); store.set("exampleId", exampleId);
+  renderQuestions(); update();
+}
+
+/* ---------------- report ---------------- */
+const badge = st => `<span class="badge s-${st}">${STATUS_TXT[st]}</span>`;
+function tool(t){
+  return `<div class="tool s-${t.status}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><b>${esc(t.title)}</b>${badge(t.status)}</div>
+    ${t.crit ? `<ul class="crit">${t.crit.map(c=>`<li><span style="color:${c.ok?"var(--ok)":"var(--block)"}">${c.ok?"✓":"✗"}</span>${esc(c.t)}</li>`).join("")}</ul>` : ""}
+    <p>${esc(t.why)}</p><small>${esc(t.ref)}</small></div>`;
+}
+function renderReport(){
+  const r = R, T = r.T;
+  const prot = r.refProt ? `
+      <div class="prot-mini">
+        <div class="kd"><small>Reference data protection ends</small><b>${fmt(r.refProt.dpEnd)}</b></div>
+        <div class="kd"><small>Earliest generic submission</small><b>${fmt(r.refProt.dpEnd)}</b></div>
+        <div class="kd"><small>Earliest marketing</small><b>${fmt(r.refProt.mpEnd)}</b></div>
+      </div><p class="r-sub">Patents and SPCs on the reference may delay launch further. Check them in the protection calculator.</p>`
+    : r.own && r.own.dp ? `
+      <div class="prot-mini">
+        <div class="kd"><small>Data protection to</small><b>${fmt(r.own.dp)}</b></div>
+        <div class="kd"><small>Market protection to</small><b>${fmt(r.own.mp)}</b></div>
+        <div class="kd"><small>${r.own.oe?"Orphan exclusivity to":"Indicative MA date"}</small><b>${fmt(r.own.oe || r.decision)}</b></div>
+      </div><p class="r-sub">Calculated from the estimated authorisation date under current rules. Applications filed once the 2026 reform applies get different periods.</p>`
+    : r.own ? `<p class="r-text">${esc(r.own.note)}</p>` : `<p class="r-text">This route carries no data or market protection of its own.</p>`;
+  $("#report").innerHTML = `
+    <div class="r-head">
+      ${exampleId ? `<span class="ex-flag">Example case: edit any answer to make it yours</span>` : ""}
+      <p class="eyebrow">${esc(T.short)} · strategy report</p>
+      <h2>${esc(A.name || "Untitled product")}</h2>
+      <div class="r-chips">${r.head.map(h=>`<span class="r-chip">${esc(h)}</span>`).join("")}</div>
+      <div class="r-actions">
+        <button class="btn primary sm" type="button" id="pdfBtn">Download PDF report</button>
+        <button class="btn sm" type="button" id="mdBtn">Markdown</button>
+        <button class="btn sm" type="button" id="cpBtn">Copy text</button>
+        <button class="btn sm ghost" type="button" id="toProt">Open protection calculator →</button>
+      </div>
+    </div>
+    ${r.flags.length ? `<div class="r-sec" style="gap:8px">${r.flags.map(f => `<div class="flag s-${f.lvl==="block"?"block":f.lvl==="warn"?"warn":"req"}"><b>${f.lvl==="block"?"Stop":f.lvl==="warn"?"Check":"Tip"}</b><span>${esc(f.t)}</span></div>`).join("")}</div>` : ""}
+    <div class="r-sec" id="sec-proc"><h3><span class="n">01</span>Procedure ${badge(r.proc.mandatory?"req":"ok")}</h3>
+      <p class="r-big">${esc(r.proc.name)}${r.proc.mandatory?" — mandatory":r.proc.optional?" — optional":""}</p>
+      <p class="r-sub">${esc(r.proc.body)} · ${esc(r.proc.scope)}</p>
+      <ul class="r-list">${r.proc.why.map(w=>`<li>${esc(w)}</li>`).join("")}</ul>
+      ${r.proc.alt ? `<p class="r-sub">Alternative route: <b>${esc({CP:"Centralised",DCP:"Decentralised",MRP:"Mutual recognition",NAT:"National"}[r.proc.alt])}</b></p>`:""}
+    </div>
+    <div class="r-sec" id="sec-basis"><h3><span class="n">02</span>Legal basis and dossier</h3>
+      <p class="r-big">${esc(r.basis.name)}</p><p class="r-sub">${esc(r.basis.ref)}</p>
+      <ul class="r-list">${r.basis.dossier.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>
+      ${r.basis.timing ? `<p class="r-text" style="font-size:14px"><b>Timing:</b> ${esc(r.basis.timing)}</p>` : ""}
+    </div>
+    <div class="r-sec" id="sec-tools"><h3><span class="n">03</span>Designations and expedited tools</h3>
+      <div class="tools">${[r.orphan, r.prime, r.acc, r.cma, r.exc, r.advice].map(tool).join("")}</div>
+    </div>
+    <div class="r-sec" id="sec-paed"><h3><span class="n">04</span>Paediatrics ${badge(r.paed.status)}</h3>
+      <p class="r-big">${esc(r.paed.title)}</p><p class="r-text">${esc(r.paed.why)}</p>
+      ${r.paed.actions ? `<ul class="r-list">${r.paed.actions.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    </div>
+    <div class="r-sec" id="sec-hta"><h3><span class="n">05</span>EU health technology assessment ${badge(r.hta.status)}</h3>
+      <p class="r-big">${esc(r.hta.title)}</p><p class="r-text">${esc(r.hta.why)}</p>
+      ${r.hta.actions ? `<ul class="r-list">${r.hta.actions.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    </div>
+    <div class="r-sec" id="sec-time"><h3><span class="n">06</span>Approval timeline (estimate)</h3>
+      <ol class="tline">${r.tl.map(t => `<li class="${t.key?"key":""}"><span class="d">${fmt(t.d)}</span><span class="p"></span><span class="w"><b>${esc(t.t)}</b>${t.s?`<span>${esc(t.s)}</span>`:""}</span></li>`).join("")}</ol>
+      <p class="r-sub">Planning estimate with typical clock-stops. Real dates follow published submission and start dates.</p>
+    </div>
+    <div class="r-sec" id="sec-prot"><h3><span class="n">07</span>Protection and market entry</h3>${prot}</div>`;
+  $("#pdfBtn").addEventListener("click", exportPdf);
+  $("#mdBtn").addEventListener("click", () => saveFile(fileBase()+".md", reportMarkdown()));
+  $("#cpBtn").addEventListener("click", () => copyText(reportMarkdown(), "Report copied as text"));
+  $("#toProt").addEventListener("click", () => { protFromStrategy(); go("protection"); });
+}
+
+/* ---------------- route line ---------------- */
+function renderRoute(){
+  const r = R;
+  const isGenericish = !!r.refProt || ["generic","hybrid","biosimilar","informed"].includes(A.type);
+  const designation = [r.orphan.status==="ok"&&"Orphan", r.prime.status==="ok"&&"PRIME"].filter(Boolean).join(" + ");
+  const accel = r.acc.status==="ok";
+  const stations = [
+    {l:"Designations", s: designation || "None needed", st: designation ? "ok" : "na", sec:"sec-tools", skip:!designation},
+    {l:"Scientific advice", s: r.advice.status==="ok" ? (r.orphan.status==="ok"?"Protocol assistance":"Recommended") : "Optional", st: r.advice.status, sec:"sec-tools", skip:r.advice.status!=="ok"},
+    {l:"Paediatric plan", s: r.paed.title.replace(/^PIP: /,""), st:r.paed.status, sec:"sec-paed", skip:r.paed.status==="na"},
+    {l:"Submission", s: {CP:"EMA",DCP:"DCP",MRP:"MRP",NAT:"National"}[r.proc.code] + (r.flags.some(f=>f.lvl==="block")?" · blocked":""), d:r.sub, st: r.flags.some(f=>f.lvl==="block")?"block":"req", sec:"sec-proc"},
+    {l:"Assessment", s: r.proc.code==="CP" ? (accel?"150 days (accelerated)":"210 days + clock-stops") : r.proc.code==="DCP" ? "210 days + national" : r.proc.code==="MRP" ? "90 days + national" : "210 days", st:"req", sec:"sec-time"},
+    {l:"Authorisation", s: r.cma.status==="ok" ? "Conditional MA" : r.exc.status==="ok" ? "Exceptional circumstances" : r.proc.code==="CP" ? "Commission decision" : "National MAs", d:r.decision, st:"req", sec:"sec-time"},
+    {l:"EU HTA", s: r.hta.status==="req" ? "Joint clinical assessment" : "National HTA", st:r.hta.status==="req"?"req":"na", sec:"sec-hta", skip:r.hta.status!=="req"},
+    {l:"Launch", s: isGenericish ? "After market protection" : "First launches; P&R by country", d:r.launch, st:"req", sec:"sec-prot"},
+    {l:"Protection ends", s: r.own && r.own.mp ? "Market protection" : r.refProt ? "Reference expired" : "Not applicable", d: r.own && r.own.mp ? r.own.mp : null, st: r.own && r.own.mp ? "req" : "na", sec:"sec-prot", skip:!(r.own && r.own.mp)}
+  ];
+  $("#routeTitle").textContent = (A.name || "Untitled product").replace(/^Example: /,"");
+  $("#routeSub").textContent = r.head.slice(0,3).join(" · ");
+  $("#route").innerHTML = stations.map(s => `<button type="button" class="stn s-${s.st} ${s.skip?"skip":""}" data-sec="${s.sec}"><span class="dot"><i></i></span><span class="lbl">${esc(s.l)}</span><span class="sub">${esc(s.s)}</span>${s.d?`<span class="date">${fmt(s.d)}</span>`:""}</button>`).join("");
+  $$("#route .stn").forEach(b => b.addEventListener("click", () => { go("strategy"); const el = document.getElementById(b.dataset.sec); if (el){ const rep = $("#report"); if (getComputedStyle(rep).position==="sticky"){ rep.scrollTo({top: el.offsetTop - 10, behavior:"smooth"}); rep.scrollIntoView({behavior:"smooth", block:"start"}); } else el.scrollIntoView({behavior:"smooth"}); } }));
+}
+function update(){ R = PF.analyse(A); renderReport(); renderRoute(); }
+
+/* ---------------- protection calculator ---------------- */
+let P = Object.assign({ma:"2016-09-15", regime:"current", newInd:false, orphan:false, pip:true, patentFiling:"2008-03-01", unmetExt:false, tev:false, breakthrough:false, newOrphanInd:false, label:"Example: reference product first authorised 15 Sep 2016"}, store.get("prot", {}));
+function protFromStrategy(){
+  const r = R;
+  if (r.refProt){ P.ma = A.refDate; P.label = `Reference of ${A.name||"your product"}`; P.newInd = !!A.refExtraYear; P.orphan = false; P.patentFiling = ""; }
+  else { P.ma = iso(r.decision); P.label = `${A.name||"Your product"} (estimated authorisation)`; P.orphan = r.orphan.status==="ok"; P.pip = r.paed.status==="req"; P.patentFiling = A.patentFiling || ""; }
+  store.set("prot", P); renderProtForm(); renderProt();
+}
+function renderProtForm(){
+  const sg = (k, opts) => `<div class="seg">${opts.map(([v,l]) => `<button type="button" data-pk="${k}" data-pv="${v}" aria-pressed="${P[k]===v}">${l}</button>`).join("")}</div>`;
+  const ck = (k, t) => `<label class="chk"><input type="checkbox" id="p-${k}" data-pc="${k}" ${P[k]?"checked":""}><span>${t}</span></label>`;
+  const reform = P.regime==="reform";
+  $("#protForm").innerHTML = `
+    <h2 style="font-size:24px">Protection clock</h2>
+    <p style="font-size:14px;color:var(--muted);font-family:var(--f-read)">Enter the first EU authorisation of the originator. Pathfinder stacks data protection, market protection, orphan exclusivity, patent and SPC, and finds the first day a generic or biosimilar can file and launch.</p>
+    <div class="q"><span class="ql">Rules</span>${sg("regime",[["current","Current law"],["reform","2026 reform (indicative)"]])}</div>
+    <div class="q"><label for="p-ma">First EU marketing authorisation (global MA)</label><input type="date" id="p-ma" data-pt="ma" value="${esc(P.ma)}"></div>
+    <div class="q"><label for="p-pf">Basic patent filing date (optional)</label><input type="date" id="p-pf" data-pt="patentFiling" value="${esc(P.patentFiling)}"></div>
+    ${ck("newInd","New indication with significant clinical benefit authorised within the first 8 years (+1 year)")}
+    ${reform ? ck("unmetExt","Unmet medical need, or new active substance with comparative trials and EU-first filing (+1 year)") + ck("tev","Transferable exclusivity voucher used (+1 year data protection)") : ""}
+    ${ck("orphan","Designated orphan medicine")}
+    ${P.orphan && reform ? ck("breakthrough","Breakthrough orphan (11 years)") + ck("newOrphanInd","New orphan indication approved (+1 year)") : ""}
+    ${ck("pip","Paediatric investigation plan completed (compliance statement)")}
+    <button class="btn" type="button" id="pFromS">Use the product in the strategy builder</button>`;
+  $$("#protForm [data-pk]").forEach(b => b.addEventListener("click", () => { P[b.dataset.pk] = b.dataset.pv; saveP(true); }));
+  $$("#protForm [data-pc]").forEach(c => c.addEventListener("change", () => { P[c.dataset.pc] = c.checked; saveP(c.dataset.pc==="orphan"); }));
+  $$("#protForm [data-pt]").forEach(i => i.addEventListener("change", () => { P[i.dataset.pt] = i.value; saveP(false); }));
+  $("#pFromS").addEventListener("click", () => { protFromStrategy(); toast("Loaded from the strategy builder"); });
+}
+function saveP(rerender){ P.label = P.label && P.label.startsWith("Example") ? "" : P.label; store.set("prot", P); if (rerender) renderProtForm(); renderProt(); }
+const BAR_COL = {dp:"var(--b-dp)", mp:"var(--b-mp)", ext:"var(--b-ext)", oe:"var(--b-oe)", pat:"var(--b-pat)", spc:"var(--b-spc)", paed:"var(--b-paed)"};
+function renderProt(){
+  const x = PF.protection(P);
+  if (!x){ $("#protOut").innerHTML = `<div class="card" style="padding:24px"><p>Enter the first EU marketing authorisation date to draw the protection clock.</p></div>`; return; }
+  const a = new Date(x.first.getFullYear(),0,1), b = new Date(x.last.getFullYear()+1,0,1), span = b - a;
+  const pct = d => ((d - a) / span * 100);
+  const yrs = []; const step = (b.getFullYear()-a.getFullYear()) > 24 ? 4 : 2;
+  for (let y=a.getFullYear(); y<=b.getFullYear(); y+=step) yrs.push(y);
+  const today = new Date();
+  const marks = [{d:x.fileGen, t:"Generic can file"},{d:x.launchGen, t:"Generic can launch"}];
+  $("#protOut").innerHTML = `
+    ${P.label ? `<p class="eyebrow" style="margin-bottom:10px">${esc(P.label)}</p>` : ""}
+    <div class="kds">
+      <div class="kd"><small>Generic / biosimilar can file</small><b>${fmt(x.fileGen)}</b><span>End of data protection</span></div>
+      <div class="kd hl"><small>Generic / biosimilar can launch</small><b>${fmt(x.launchGen)}</b><span>Later of market protection and patent/SPC${x.paedEnd?" + paediatric extension":""}</span></div>
+      <div class="kd"><small>Patent / SPC expiry</small><b>${fmt(x.ipEnd)}</b><span>${x.spcEnd?"Including SPC":x.patEnd?"No SPC available":"Patent date not entered"}</span></div>
+      <div class="kd"><small>Orphan exclusivity ends</small><b>${x.oeEnd?fmt(x.oeEnd):"—"}</b><span>${x.oeEnd?"Similar medicines blocked until then":"Not an orphan medicine"}</span></div>
+    </div>
+    <div class="card gantt-card">
+      <div class="gantt-scroll"><div class="gantt" id="gantt">
+        ${x.bars.map(br => `<div class="g-row"><span class="gl">${esc(br.t)}<small>${fmt(br.a).slice(3)} → ${fmt(br.b).slice(3)}</small></span>
+          <div class="g-track"><div class="g-bar" title="${esc(br.note)}" style="left:${pct(br.a)}%;width:${Math.max(.5,pct(br.b)-pct(br.a))}%;background:${BAR_COL[br.k]}"></div></div></div>`).join("")}
+        <div class="g-axis"><span></span><div class="g-ticks">${yrs.map(y => `<span style="left:${pct(new Date(y,0,1))}%">${y}</span>`).join("")}</div></div>
+        <div style="position:absolute;inset:0 0 0 182px;pointer-events:none" id="gMarks">
+          ${marks.map((m,i) => `<div class="g-mark" style="left:${pct(m.d)}%"><span style="top:${-2 + i*17}px;${pct(m.d)>75?"left:auto;right:4px":""}">${esc(m.t)}</span></div>`).join("")}
+          ${today>a && today<b ? `<div class="g-mark today" style="left:${pct(today)}%"><span style="top:auto;bottom:-2px">Today</span></div>` : ""}
+        </div>
+      </div></div>
+      <div class="notes">${x.bars.map(br => `<p><b style="font-family:var(--f-ui);color:var(--ink)">${esc(br.t)}.</b> ${esc(br.note)}</p>`).join("")}${x.notes.map(n=>`<p>${esc(n)}</p>`).join("")}
+      <p>The 8+2(+1) periods run from the first authorisation of the active substance anywhere in the EU (global marketing authorisation), not from later strengths or forms. Patent and SPC positions vary by country and may be challenged; confirm with patent counsel.</p></div>
+    </div>`;
+  // place marks over tracks only
+  const g = $("#gantt"), gm = $("#gMarks");
+  if (g && gm){ const lbl = window.matchMedia("(max-width:760px)").matches ? 114 : 182; gm.style.left = lbl+"px"; }
+}
+
+/* ---------------- static pages ---------------- */
+function renderPathways(){
+  $("#pathways").innerHTML = `
+  <h2 id="pw-proc">Four routes to an EU authorisation</h2>
+  <p>The procedure decides who assesses your dossier and where the authorisation is valid. Some products have no choice: the centralised procedure is mandatory for them.</p>
+  <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Procedure</th><th>Who decides</th><th>Result</th><th>Statutory clock</th><th>Typical use</th></tr></thead><tbody>
+    <tr><td>Centralised (CP)</td><td>EMA's CHMP gives an opinion; the European Commission decides</td><td>One MA for all EU/EEA countries</td><td class="num">210 days (150 accelerated) + clock-stops + 67 days</td><td>Mandatory for biotech, ATMPs, orphans and new substances for cancer, diabetes, neurodegeneration, autoimmune and viral diseases, HIV/AIDS</td></tr>
+    <tr><td>Decentralised (DCP)</td><td>A reference Member State leads; concerned Member States agree</td><td>Identical national MAs</td><td class="num">210 days + 30 national</td><td>Products not yet authorised anywhere in the EU, for several countries</td></tr>
+    <tr><td>Mutual recognition (MRP)</td><td>Other countries recognise an existing national MA</td><td>Identical national MAs</td><td class="num">90 (+90 AR update) + 30 national</td><td>Products already authorised in one Member State</td></tr>
+    <tr><td>National</td><td>One national competent authority</td><td>One national MA</td><td class="num">210 days</td><td>A single country</td></tr>
+  </tbody></table></div>
+  <div class="callout"><b>Memory hook:</b> <i>“Biotech, ATMP, orphan, and the six diseases go to Amsterdam.”</i> Cancer, diabetes, neurodegeneration, autoimmune, viral, HIV/AIDS: a new active substance for any of them must use the centralised procedure.</div>
+
+  <h2 id="pw-basis">Eight legal bases</h2>
+  <p>The legal basis decides what your dossier must contain. The key question is how much you can rely on someone else's data.</p>
+  <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Basis</th><th>Article</th><th>Own data needed</th></tr></thead><tbody>
+    ${Object.entries(PF.BASES).map(([k,b]) => `<tr><td>${esc(b.name)}</td><td class="num">${esc(k)}</td><td>${esc(b.dossier.slice(1).join(" · "))}</td></tr>`).join("")}
+  </tbody></table></div>
+
+  <h2 id="pw-tools">Expedited tools at a glance</h2>
+  <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Tool</th><th>For</th><th>What you get</th><th>When to act</th></tr></thead><tbody>
+    <tr><td>PRIME</td><td>Unmet need, early evidence of major therapeutic advantage</td><td>Early rapporteur, kick-off meeting, iterative advice</td><td>After proof of concept (earlier for SMEs and academia)</td></tr>
+    <tr><td>Accelerated assessment</td><td>Major public health interest, therapeutic innovation</td><td>150-day CHMP timetable instead of 210</td><td>Request 2–3 months before submission</td></tr>
+    <tr><td>Conditional MA</td><td>Seriously debilitating or life-threatening disease, orphans, emergencies; unmet need</td><td>Approval on less comprehensive data, renewable yearly, with specific obligations</td><td>Discuss at pre-submission; claim in the application</td></tr>
+    <tr><td>Exceptional circumstances</td><td>Comprehensive data can never be obtained</td><td>Approval with specific obligations, reviewed annually</td><td>Justify in the application</td></tr>
+    <tr><td>Orphan designation</td><td>≤5 in 10,000, serious condition, no satisfactory method or significant benefit</td><td>Protocol assistance, fee reductions, market exclusivity</td><td>Before the MA application</td></tr>
+  </tbody></table></div>
+
+  <h2 id="pw-orphan">Orphan medicines</h2>
+  <p>Three criteria, all needed: a life-threatening or chronically debilitating condition; prevalence of no more than 5 in 10,000 people in the EU (or insufficient expected return); and no satisfactory method authorised, or significant benefit over it. EMA's Committee for Orphan Medicinal Products (COMP) gives an opinion within 90 days; the Commission designates. At marketing authorisation the criteria are checked again.</p>
+  <p>The reward under current law is <b>10 years of market exclusivity</b> against similar medicines for the same indication, extended to 12 with a completed paediatric plan. It can drop to 6 years if, at the end of year 5, the product is profitable enough or the criteria are no longer met.</p>
+
+  <h2 id="pw-paed">Paediatric obligations</h2>
+  <p>Every new medicine must present, at submission, the results of a paediatric investigation plan agreed with the PDCO, or a waiver or a deferral. The PIP is due no later than the end of adult pharmacokinetic studies. Generics, hybrids, biosimilars, well-established use, herbal and homeopathic products are exempt.</p>
+  <p>The reward for compliance is a <b>6-month extension of the SPC</b>, or 2 extra years of orphan market exclusivity for orphan medicines.</p>
+
+  <h2 id="pw-prot">Protection: the 8 + 2 + 1 rule</h2>
+  <ul>
+    <li><b>8 years data protection:</b> no generic or biosimilar application can refer to the originator's data.</li>
+    <li><b>+2 years market protection:</b> a generic can be authorised but not marketed.</li>
+    <li><b>+1 year:</b> if a new indication with significant clinical benefit is authorised in the first 8 years.</li>
+    <li><b>Patents and SPCs</b> run in parallel: an SPC adds up to 5 years after the patent, capped at 15 years of exclusivity from the first EU MA; +6 months for paediatric compliance.</li>
+  </ul>
+
+  <h2 id="pw-hta">EU joint clinical assessment</h2>
+  <p>Since 12 January 2025, the HTA Regulation (EU) 2021/2282 requires one EU-level clinical assessment of relative effectiveness for new medicines in scope, run in parallel with EMA's review. Member States still decide price and reimbursement, but must take the joint report into account.</p>
+  <ol class="mile">
+    <li class="done"><span class="d">12 Jan 2025</span><b>Cancer medicines (new active substances) and ATMPs</b></li>
+    <li class="next"><span class="d">13 Jan 2028</span><b>Designated orphan medicines</b></li>
+    <li><span class="d">13 Jan 2030</span><b>All centrally authorised new active substances</b></li>
+  </ol>`;
+}
+function renderReform(){
+  $("#reformTxt").innerHTML = `
+  <h2 id="rf-status">Where the reform stands</h2>
+  <p>The EU pharmaceutical package, a new directive and regulation replacing Directive 2001/83/EC and Regulation (EC) No 726/2004, is the biggest overhaul of EU medicines law in two decades. It is close to final adoption.</p>
+  <ol class="mile">
+    <li class="done"><span class="d">26 Apr 2023</span><b>Commission proposal</b></li>
+    <li class="done"><span class="d">10 Apr 2024</span><b>European Parliament first-reading position</b></li>
+    <li class="done"><span class="d">4 Jun 2025</span><b>Council position</b></li>
+    <li class="done"><span class="d">11 Dec 2025</span><b>Political agreement (trilogue)</b></li>
+    <li class="done"><span class="d">28 Sep 2026</span><b>Council formally adopts the package</b></li>
+    <li class="next"><span class="d">Indicative: 23 Nov 2026</span><b>Parliament's final plenary vote</b><span>Second reading opened 8 October 2026.</span></li>
+    <li><span class="d">After publication</span><b>Entry into force 20 days after Official Journal publication</b></li>
+    <li><span class="d">+24 months</span><b>Regulation applies; directive transposed</b><span>Expected around 2028. Existing MAs and applications filed before then keep the current protection rules.</span></li>
+  </ol>
+  <h2 id="rf-compare">Current law vs reform</h2>
+  <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Topic</th><th>Current law</th><th>Reform (agreed text)</th></tr></thead><tbody>
+    <tr><td>Data protection</td><td>8 years</td><td>8 years (+1 with a transferable exclusivity voucher)</td></tr>
+    <tr><td>Market protection</td><td>2 years (+1 for a new indication)</td><td>1 year baseline; +1 new indication with significant benefit; +1 unmet need or new active substance with comparative trials and EU-first filing or multi-country trials</td></tr>
+    <tr><td>Maximum regulatory protection</td><td>11 years</td><td>11 years (12 with a voucher)</td></tr>
+    <tr><td>Orphan exclusivity</td><td>10 years (+2 paediatric)</td><td>9 years; 11 for breakthrough orphans; +1 for a new orphan indication; product-based, not per indication</td></tr>
+    <tr><td>Orphan paediatric reward</td><td>+2 years exclusivity</td><td>Removed; orphans can get the 6-month SPC extension instead</td></tr>
+    <tr><td>CHMP assessment</td><td>210 days</td><td>180 days</td></tr>
+    <tr><td>Bolar exemption</td><td>Studies and trials for generics</td><td>Also pricing, reimbursement, HTA and tender preparation, including by third parties</td></tr>
+    <tr><td>Antimicrobials</td><td>No specific incentive</td><td>Transferable exclusivity voucher for priority antimicrobials, valid 5 years, barred for products above €490 million annual EU sales</td></tr>
+  </tbody></table></div>
+  <div class="callout"><b>Use it in the calculator:</b> switch the protection clock to “2026 reform” to see how the same product's protection changes under the new rules.</div>
+  <h2 id="rf-other">Other changes worth knowing</h2>
+  <ul>
+    <li>Products with a paediatric indication must be placed on the market in relevant Member States within 2 years of the PIP-based authorisation.</li>
+    <li>Supply disruptions expected to last long must be notified in advance, usually at least 6 months; withdrawals need at least 12 months' notice.</li>
+    <li>Member States can require supply of protected medicines in sufficient quantities, with safeguards against parallel trade.</li>
+  </ul>
+  <h2 id="rf-src">Sources</h2>
+  <ul>
+    <li><a href="https://www.consilium.europa.eu/en/press/press-releases/2026/09/28/pharma-package-council-adopts-new-rules-for-a-fairer-and-more-competitive-eu-pharmaceutical-sector/" target="_blank" rel="noopener">Council of the EU press release, 28 September 2026</a></li>
+    <li><a href="https://www.hsfkramer.com/notes/ip/2026-04/the-eu-pharma-package-finally-here-what-it-changes-and-what-it-means" target="_blank" rel="noopener">HSF Kramer: what the pharma package changes</a></li>
+    <li><a href="https://www.regunaut.com/eu-directive/timeline" target="_blank" rel="noopener">Legislative timeline tracker</a></li>
+  </ul>`;
+}
+const ME = {name:"Dr. Hatem Raad", email:"s.raaed@hotmail.com", phone:"+49 160 4938166", tel:"+491604938166"};
+function renderContact(){
+  const onPages = /github\.io$/.test(location.hostname);
+  $("#contact").innerHTML = `
+  <div class="profile">
+    <div>
+      <div class="p-hero"><div class="monogram">HR</div><div>
+        <p class="eyebrow">Creator of Pathfinder EU</p><h2>${ME.name}, MD</h2>
+        <p class="p-role">Physician moving into EU Regulatory Affairs · Master of Drug Regulatory Affairs (MDRA) candidate, University of Bonn</p>
+        <div class="p-tags"><span class="p-tag open">Open to Regulatory Affairs roles across Europe</span><span class="p-tag">EU citizen (Romania)</span><span class="p-tag">Based in Budapest · open to relocation</span></div>
+      </div></div>
+      <div class="prose" style="margin-top:24px;max-width:none">
+        <p>I am a medical doctor with an emergency medicine specialisation and three years of pharmaceutical industry experience in sales and medical liaison. I am now building a career in EU regulatory affairs, where clinical judgement meets the rules that keep medicines safe.</p>
+        <p>Pathfinder EU turns EU registration law into a strategy engine: procedure, legal basis, designations, paediatric and HTA obligations, approval timeline and protection, all traced to their legal source. It is the companion to Variation Compass, which handles the product's life after approval.</p>
+      </div>
+      ${onPages ? `<a class="sister" href="../variation-compass/" style="margin-top:18px"><b style="font-size:20px">↗</b><span><b>Variation Compass</b><br><span style="font-size:13.5px;color:var(--muted)">Classify EU post-authorisation variations under Guidelines C/2025/5045</span></span></a>` : `<div class="sister" style="margin-top:18px"><b style="font-size:20px">↗</b><span><b>Also by Hatem: Variation Compass</b><br><span style="font-size:13.5px;color:var(--muted)">Classify EU post-authorisation variations under Guidelines C/2025/5045</span></span></div>`}
+      <div class="cv" aria-label="Background">
+        <div class="cv-row"><span class="yr">Ongoing</span><div><b>Master of Drug Regulatory Affairs (MDRA)</b><span>University of Bonn, Germany</span></div></div>
+        <div class="cv-row"><span class="yr">~3 years</span><div><b>Pharmaceutical sales &amp; medical liaison</b><span>Profarma Direct · medical affairs scope</span></div></div>
+        <div class="cv-row"><span class="yr">2018–2022</span><div><b>Residency in Emergency Medicine</b><span>Clinical training in acute care</span></div></div>
+        <div class="cv-row"><span class="yr">2018</span><div><b>Doctor of Medicine (MD)</b><span>Nicolae Testemițanu State University of Medicine and Pharmacy, Chișinău</span></div></div>
+        <div class="cv-row"><span class="yr">Founder</span><div><b>Labsense.org &amp; MyPrivateDoctor.org</b><span>Lab-result interpretation and telemedicine second-opinion platforms</span></div></div>
+        <div class="cv-row"><span class="yr">Languages</span><div><b>English, Arabic, Russian (fluent) · Romanian (good) · German (learning)</b></div></div>
+      </div>
+    </div>
+    <aside class="card contact-card" aria-label="Contact">
+      <p class="eyebrow">Get in touch</p>
+      <h2 style="font-size:24px">Hiring, feedback or a strategy question?</h2>
+      <p style="font-size:14.5px;color:var(--muted);font-family:var(--f-read)">I'm glad to hear from regulatory teams, recruiters and anyone using the tool. If you spot an error, please tell me.</p>
+      <div class="c-line"><div><small>Email</small><a href="mailto:${ME.email}?subject=Pathfinder%20EU">${ME.email}</a></div><button class="btn sm" type="button" data-copy="${ME.email}">Copy</button></div>
+      <div class="c-line"><div><small>Phone / WhatsApp</small><a href="tel:${ME.tel}">${ME.phone}</a></div><button class="btn sm" type="button" data-copy="${ME.tel}">Copy</button></div>
+      <a class="btn primary" href="mailto:${ME.email}?subject=Pathfinder%20EU%20%E2%80%93%20contact">Write an email</a>
+    </aside>
+  </div>
+  <div class="legal">
+    <div><h3>Imprint</h3>
+      <p><b style="color:var(--ink)">Responsible for content</b><br>${ME.name}, MD<br>Email: ${ME.email}<br>Phone: ${ME.phone}</p>
+      <p style="margin-top:10px">Pathfinder EU is a private, non-commercial educational project, not affiliated with the European Commission, EMA, HMA or any national competent authority.</p>
+      <h3 style="margin-top:22px">Disclaimer</h3>
+      <p>Strategy support based on EU legislation and guidance as summarised on this site. It is not legal or regulatory advice. Dates are estimates; protection and patent positions must be confirmed by qualified counsel. Reform figures reflect the agreed text before final adoption and may change. No liability is accepted for decisions based on this site.</p></div>
+    <div><h3>Privacy</h3><ul>
+      <li>No cookies, analytics, tracking or accounts.</li>
+      <li>Your answers stay in your own browser's local storage and are never sent to me or any server. Clear this site's data in your browser to delete them.</li>
+      <li>Fonts load from Google Fonts and the PDF library from cdnjs (Cloudflare); these providers receive your IP address when your browser requests the files.</li>
+      <li>Hosted on GitHub Pages; GitHub may log visitor IP addresses for security under its own privacy statement.</li>
+      <li>If you email or call me, I use your details only to reply, and delete them on request (GDPR).</li>
+    </ul></div>
+  </div>`;
+  $$("#contact [data-copy]").forEach(b => b.addEventListener("click", () => copyText(b.dataset.copy, "Copied " + b.dataset.copy)));
+}
+
+/* ---------------- export ---------------- */
+function fileBase(){ return "Pathfinder-EU_" + (A.name||"strategy").replace(/^Example: /,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").slice(0,40) + "_" + iso(new Date()); }
+function reportModel(){
+  const r = R;
+  const tools = [r.orphan, r.prime, r.acc, r.cma, r.exc, r.advice].map(t => ({t:t.title, s:STATUS_TXT[t.status], why:t.why, ref:t.ref}));
+  return {r, tools};
+}
+function reportMarkdown(){
+  const {r, tools} = reportModel();
+  let s = `# Regulatory strategy report: ${A.name||"Untitled product"}\n\n_${r.T.label} · prepared ${fmt(new Date())} with Pathfinder EU by Dr. Hatem Raad_\n\n**Route:** ${r.head.join(" · ")}\n\n`;
+  if (r.flags.length) s += r.flags.map(f=>`> **${f.lvl==="block"?"STOP":f.lvl==="warn"?"CHECK":"TIP"}:** ${f.t}`).join("\n>\n") + "\n\n";
+  s += `## 1. Procedure\n\n**${r.proc.name}${r.proc.mandatory?" (mandatory)":""}** — ${r.proc.body}; ${r.proc.scope}.\n\n` + r.proc.why.map(w=>`- ${w}`).join("\n") + "\n\n";
+  s += `## 2. Legal basis and dossier\n\n**${r.basis.name}** (${r.basis.ref})\n\n` + r.basis.dossier.map(d=>`- ${d}`).join("\n") + (r.basis.timing?`\n\n**Timing:** ${r.basis.timing}`:"") + "\n\n";
+  s += `## 3. Designations and expedited tools\n\n| Tool | Status | Rationale |\n|---|---|---|\n` + tools.map(t=>`| ${t.t} | ${t.s} | ${t.why.replace(/\|/g,"/")} |`).join("\n") + "\n\n";
+  s += `## 4. Paediatrics\n\n**${r.paed.title}** — ${r.paed.why}\n\n` + (r.paed.actions? r.paed.actions.map(x=>`- ${x}`).join("\n")+"\n\n":"");
+  s += `## 5. EU HTA\n\n**${r.hta.title}** — ${r.hta.why}\n\n` + (r.hta.actions? r.hta.actions.map(x=>`- ${x}`).join("\n")+"\n\n":"");
+  s += `## 6. Approval timeline (estimate)\n\n| Date | Milestone |\n|---|---|\n` + r.tl.map(t=>`| ${iso(t.d)} | ${t.t} |`).join("\n") + "\n\n";
+  s += `## 7. Protection\n\n` + (r.refProt ? `- Reference data protection ends: ${iso(r.refProt.dpEnd)}\n- Earliest marketing: ${iso(r.refProt.mpEnd)} (subject to patents/SPCs)\n` : r.own && r.own.dp ? `- Data protection to: ${iso(r.own.dp)}\n- Market protection to: ${iso(r.own.mp)}\n${r.own.oe?`- Orphan market exclusivity to: ${iso(r.own.oe)}\n`:""}` : r.own ? r.own.note+"\n" : "No own protection for this route.\n");
+  s += `\n---\n_Strategy support only, not legal or regulatory advice. Pathfinder EU · Dr. Hatem Raad · ${ME.email}_\n`;
+  return s;
+}
+function pdfSafe(t){ return String(t||"").replace(/≥/g,">=").replace(/≤/g,"<=").replace(/→/g,"->").replace(/✓/g,"OK").replace(/✗/g,"X").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/…/g,"...").replace(/[ăâ]/g,"a").replace(/[țţ]/g,"t").replace(/[șş]/g,"s").replace(/[ĂÂ]/g,"A").replace(/[ȚŢ]/g,"T").replace(/[ȘŞ]/g,"S").replace(/[^\x00-\xFF–—•€]/g,""); }
+function exportPdf(){
+  const J = window.jspdf; if (!J || !J.jsPDF){ toast("The PDF engine did not load. Use Markdown or Copy text."); return; }
+  const {r, tools} = reportModel();
+  const doc = new J.jsPDF({unit:"pt", format:"a4"});
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), L = 50, Rx = W-50;
+  const blue = [39,68,196], ink = [15,22,48], grey = [83,93,118], orange = [217,86,31];
+  let y = 0;
+  doc.setFillColor(...blue); doc.rect(0,0,W,96,"F");
+  doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.text("PATHFINDER EU - REGULATORY STRATEGY REPORT", L, 34);
+  doc.setFontSize(19); const tl = doc.splitTextToSize(pdfSafe(A.name||"Untitled product"), Rx-L); doc.text(tl.slice(0,2), L, 60);
+  doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.text(pdfSafe(`${r.T.label} - ${fmt(new Date())}`), L, 86);
+  y = 122;
+  const need = h => { if (y+h > H-56){ doc.addPage(); y = 56; } };
+  const para = (t, size=10, color=ink, style="normal", gap=4) => { doc.setFont("helvetica", style); doc.setFontSize(size); doc.setTextColor(...color); doc.splitTextToSize(pdfSafe(t), Rx-L).forEach(l => { need(size*1.35); doc.text(l, L, y); y += size*1.35; }); y += gap; };
+  const head = (n, t) => { need(36); y += 10; doc.setFont("courier","bold"); doc.setFontSize(10); doc.setTextColor(...blue); doc.text(n, L, y); doc.setFont("helvetica","bold"); doc.setFontSize(12.5); doc.setTextColor(...ink); doc.text(pdfSafe(t), L+24, y); y += 6; doc.setDrawColor(...blue); doc.setLineWidth(1); doc.line(L, y, Rx, y); y += 14; };
+  para("Route: " + r.head.join("  |  "), 10.5, ink, "bold", 6);
+  r.flags.forEach(f => para(`${f.lvl==="block"?"STOP":f.lvl==="warn"?"CHECK":"TIP"}: ${f.t}`, 9.5, f.lvl==="block"?[176,46,57]:f.lvl==="warn"?[154,95,8]:grey, "normal", 3));
+  head("01","Procedure"); para(`${r.proc.name}${r.proc.mandatory?" (mandatory)":""}`, 12, ink, "bold", 2); para(`${r.proc.body} - ${r.proc.scope}`, 9.5, grey); r.proc.why.forEach(w => para("• "+w, 10, ink, "normal", 2));
+  head("02","Legal basis and dossier"); para(r.basis.name, 12, ink, "bold", 2); para(r.basis.ref, 9.5, grey); r.basis.dossier.forEach(d => para("• "+d, 10, ink, "normal", 2)); if (r.basis.timing) para("Timing: "+r.basis.timing, 10, orange, "bold");
+  head("03","Designations and expedited tools");
+  doc.autoTable({startY:y, margin:{left:L,right:50}, headStyles:{fillColor:blue, textColor:255, fontSize:8.5}, styles:{fontSize:8.8, cellPadding:4, textColor:ink, lineColor:[220,225,234], lineWidth:.5}, columnStyles:{0:{cellWidth:120, fontStyle:"bold"},1:{cellWidth:56}},
+    head:[["Tool","Status","Rationale"]], body: tools.map(t => [pdfSafe(t.t), t.s, pdfSafe(t.why)])});
+  y = doc.lastAutoTable.finalY + 8;
+  head("04","Paediatrics"); para(r.paed.title, 11.5, ink, "bold", 2); para(r.paed.why, 10); (r.paed.actions||[]).forEach(x => para("• "+x, 10, ink, "normal", 2));
+  head("05","EU health technology assessment"); para(r.hta.title, 11.5, ink, "bold", 2); para(r.hta.why, 10); (r.hta.actions||[]).forEach(x => para("• "+x, 10, ink, "normal", 2));
+  head("06","Approval timeline (estimate)");
+  doc.autoTable({startY:y, margin:{left:L,right:50}, headStyles:{fillColor:blue, textColor:255, fontSize:8.5}, styles:{fontSize:9, cellPadding:4, textColor:ink, lineColor:[220,225,234], lineWidth:.5}, columnStyles:{0:{cellWidth:86, font:"courier", textColor:orange}},
+    head:[["Date","Milestone","Detail"]], body: r.tl.map(t => [iso(t.d), pdfSafe(t.t), pdfSafe(t.s||"")])});
+  y = doc.lastAutoTable.finalY + 8;
+  head("07","Protection and market entry");
+  if (r.refProt){ para(`Reference data protection ends: ${fmt(r.refProt.dpEnd)}`, 10.5, ink, "bold", 2); para(`Earliest marketing: ${fmt(r.refProt.mpEnd)} (subject to patents and SPCs)`, 10.5, ink, "bold"); }
+  else if (r.own && r.own.dp){ para(`Data protection to ${fmt(r.own.dp)}; market protection to ${fmt(r.own.mp)}${r.own.oe?`; orphan market exclusivity to ${fmt(r.own.oe)}`:""} (current rules, from the estimated MA date).`, 10.5); }
+  else para(r.own ? r.own.note : "No own protection for this route.", 10);
+  const pages = doc.internal.getNumberOfPages();
+  for (let i=1;i<=pages;i++){ doc.setPage(i); doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(130,138,158);
+    doc.text(`Pathfinder EU - Dr. Hatem Raad, MD - ${ME.email} - Strategy support only, not legal or regulatory advice.`, L, H-28); doc.text(`${i} / ${pages}`, Rx, H-28, {align:"right"}); }
+  saveFile(fileBase()+".pdf", doc.output("blob"));
+}
+let dlNS, dlTried = false;
+async function getDownloads(){ if (dlTried) return dlNS; dlTried = true; try { dlNS = (window.claude && window.claude.use) ? await window.claude.use("downloads") : undefined; } catch(e){ dlNS = null; } return dlNS; }
+async function saveFile(name, data){
+  const dl = await getDownloads();
+  if (dl){ try { await dl.save({filename:name, data}); toast("Saved " + name); } catch(err){ toast(err && err.code==="declined" ? "Download cancelled" : "Downloads aren't available here. Use Copy text."); } return; }
+  if (dl === null){ toast("Downloads aren't available in this view. Use Copy text."); return; }
+  const blob = data instanceof Blob ? data : new Blob([data], {type:"text/markdown"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function copyText(text, msg){
+  const done = () => toast(msg||"Copied");
+  const fb = () => { const t = document.createElement("textarea"); t.value = text; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select(); try{ document.execCommand("copy"); done(); }catch(e){ toast("Select and copy manually"); } t.remove(); };
+  try { navigator.clipboard.writeText(text).then(done, fb); } catch(e){ fb(); }
+}
+let tt; function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2400); }
+
+/* ---------------- navigation ---------------- */
+const VIEWS = ["strategy","protection","pathways","reform","contact"];
+function go(v, noHash){
+  if (!VIEWS.includes(v)) v = "strategy";
+  VIEWS.forEach(x => $("#view-"+x).hidden = x!==v);
+  $$(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view===v)));
+  if (v==="protection") renderProt();
+  if (!noHash){ try{ history.replaceState(null,"","#"+v); }catch(e){} }
+  const tb = $(".tabs-bar"), top = tb.getBoundingClientRect().top + window.scrollY;
+  if (window.scrollY > top) window.scrollTo({top});
+}
+function initTheme(){
+  const s = store.get("theme", null); if (s) document.documentElement.setAttribute("data-theme", s);
+  $("#themeBtn").addEventListener("click", () => { const cur = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"); const nx = cur==="dark"?"light":"dark"; document.documentElement.setAttribute("data-theme", nx); store.set("theme", nx); });
+}
+function init(){
+  initTheme(); renderQuestions(); update(); renderProtForm(); renderProt(); renderPathways(); renderReform(); renderContact();
+  $$(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.view)));
+  $$("[data-go]").forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); go(a.dataset.go); }));
+  $$("a[data-scroll]").forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); const el = document.getElementById(a.getAttribute("href").slice(1)); el && el.scrollIntoView({behavior:"smooth"}); }));
+  const h = (location.hash||"").slice(1); go(VIEWS.includes(h)?h:"strategy", true);
+  window.addEventListener("resize", () => { if (!$("#view-protection").hidden) renderProt(); });
+}
+init();
+})();
+
+</script>
+
+</body>
+</html>
